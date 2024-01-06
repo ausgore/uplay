@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace Uplay.Models
 {
@@ -13,7 +12,7 @@ namespace Uplay.Models
 		[Required]
 		public string Email { get; set; } = string.Empty;
 
-		[Required, JsonIgnore]
+		[Required]
 		public string Password { get; set; } = string.Empty;
 
 		[Column(TypeName = "datetime")]
@@ -21,6 +20,5 @@ namespace Uplay.Models
 
 		[Column(TypeName = "datetime")]
 		public DateTime UpdatedAt { get; set; } = DateTime.Now;
-		
 	}
 }

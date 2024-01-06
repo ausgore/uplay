@@ -54,18 +54,18 @@ namespace Uplay.Controllers
 			request.Password = request.Password.Trim();
 			string message = "Email or password is incorrect.";
 			
-			var user = context.Users.Where(u => u.Email == request.Email).FirstOrDefault();
-			if (user == null)
+			var foundUser = context.Users.Where(u => u.Email == request.Email).FirstOrDefault();
+			if (foundUser == null)
 			{
 				return BadRequest(new { message });
 			}
-			bool verified = BCrypt.Net.BCrypt.Verify(request.Password, user.Password);
+			bool verified = BCrypt.Net.BCrypt.Verify(request.Password, foundUser.Password);
 			if (!verified)
 			{
 				return BadRequest(new { message });
 			}
 
-			return Ok(user);
+			return Ok();
 		}
 	}	
 }	
