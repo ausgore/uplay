@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "ehkNKOS4Pjcf4YWGr7hIYpYQoWPIqttzuwb3L/CzcLjt+ppAsTwbEElhL1Xw4J7q4Uhldhj1KepgC0uEpRTzeQ==",
+  "dgSpecHash": "d4P/S9Y/1YYzCOrxzrAWECEbAxE/+VgJWV5y7lVOekS31MN5Gn88V7q2GDBeu2Zd40GSRLrF+4cZIIa9BxYWlQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\Glenn\\Documents\\GitHub\\uplay\\backend\\backend.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Glenn\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\Glenn\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Glenn\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.0\\microsoft.aspnetcore.openapi.8.0.0.nupkg.sha512",
     "C:\\Users\\Glenn\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\6.0.0\\microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",

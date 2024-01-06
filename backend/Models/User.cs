@@ -12,6 +12,9 @@ namespace Uplay.Models
 		[Required]
 		public string Email { get; set; } = string.Empty;
 
+		[Required]
+		public string Password { get; set; } = string.Empty;
+
 		[Column(TypeName = "datetime")]
 		public DateTime CreatedAt { get; private set; } = DateTime.Now;
 
