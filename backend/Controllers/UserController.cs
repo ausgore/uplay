@@ -13,7 +13,7 @@ namespace Uplay.Controllers
 			context = _context;
 		}
 
-		[HttpGet("{search}")]
+		[HttpGet()]
 		public IActionResult Get(string? search)
 		{
 			IQueryable<User> result = context.Users;
