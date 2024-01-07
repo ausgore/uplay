@@ -35,7 +35,7 @@ namespace Uplay.Controllers
 		{
 			// Get an existing user in the database with the same email
 			// If there is an existing user, return a bad request
-			var foundUser = context.Users.Where(u => u.Email == request.Email).First();
+			var foundUser = context.Users.Where(u => u.Email == request.Email).FirstOrDefault();
 			if (foundUser != null)
 			{
 				return BadRequest(new { message = "There is already an existing user with this email." });
@@ -65,7 +65,7 @@ namespace Uplay.Controllers
 			
 			// Get an existing user in the database with the same email
 			// If there isn't an existing user, return a bad request
-			var user = context.Users.Where(u => u.Email == request.Email).First();
+			var user = context.Users.Where(u => u.Email == request.Email).FirstOrDefault();
 			if (user == null)
 			{
 				return NotFound(new { message });
@@ -85,7 +85,7 @@ namespace Uplay.Controllers
 		[HttpPost("forget-password")]
 		public IActionResult ForgetPassword([FromQuery] string email)
 		{
-			var user = context.Users.Where(u => u.Email == email).First();
+			var user = context.Users.Where(u => u.Email == email).FirstOrDefault();
 			if (user == null)
 			{
 				return NotFound(new { message = "User not found." });
@@ -111,14 +111,14 @@ namespace Uplay.Controllers
 		public IActionResult ResetPassword([FromBody] ResetPasswordRequest request)
 		{
 			// Find user by email
-			var user = context.Users.FirstOrDefault(u => u.Email == request.Email);
+			var user = context.Users.Where(u => u.Email == request.Email).FirstOrDefault();
 			if (user == null)
 			{
 				return NotFound(new { message = "User not found." });
 			}
 
 			// Check if reset code is valid
-			var resetCodeEntry = context.PasswordResetCodes.Where(c => c.ResetCode == request.ResetCode && c.UserId == user.Id).First();
+			var resetCodeEntry = context.PasswordResetCodes.Where(c => c.ResetCode == request.ResetCode && c.UserId == user.Id).FirstOrDefault();
 			if (resetCodeEntry == null || resetCodeEntry.ExpirationDate < DateTime.Now)
 			{
 				return BadRequest(new { message = "Invalid or expired token." });
