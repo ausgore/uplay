@@ -1,6 +1,6 @@
 import Logo from "../assets/images/logo.png";
 import Dance from "../assets/images/dance.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import FormError from "../components/FormError";
 import { useState } from "react";
 import axios from "axios";
@@ -8,21 +8,43 @@ import { useUserUpdate } from "../contexts/UserContext";
 
 const Login = () => {
 	const updateUser = useUserUpdate();
+	const navigate = useNavigate();
+
 	const [emailValue, setEmailValue] = useState("");
 	const [emailError, setEmailError] = useState("");
 	const [passwordValue, setPasswordValue] = useState("");
+	const [passwordError, setPasswordError] = useState("");
 
 	
 	const onSubmit = async e => {
 		e.preventDefault();
 		
 		const response = await axios.post("http://localhost:5021/user/login", { email: emailValue, password: passwordValue }).catch(e => e.response);
-		if (response.data.message) return setEmailError(response.data.message);
+		if (response.data.message) {
+			setEmailError(response.data.message);
+			return setPasswordError(response.data.message);
+		}
 
 		setEmailError("");
+		setPasswordError("");
 		
 		updateUser(response.data);
 		alert(`Successfully logged in as ${response.data.email}`);
+		navigate("/activities");
+	}
+
+	const forgotPassword = async e => {
+		setPasswordError("");
+
+		if (!emailValue.length) return setEmailError("Please enter the email of the account you can't log into.");
+		const response = await axios.post(`http://localhost:5021/user/forget-password?email=${emailValue}`).catch(e => e.response);
+		if (response.data.message) return setEmailError("We can't seem to find an account under that email address.");
+
+		setEmailError("");
+
+		console.log(response.data);
+		alert(`We have sent a link to ${emailValue} (DEBUG Immediate Redirect: ${response.data.resetCode})`);
+		navigate(`/reset-password/${response.data.resetCode}?email=${encodeURIComponent(emailValue)}`);
 	}
 
 	return <>
@@ -46,7 +68,7 @@ const Login = () => {
 							<label htmlFor="password" className="font-medium text-lg mb-1">Password</label>
 							<div className="flex flex-row items-center">
 								<input type="password" id="password" className="border-b-[#E6533F] border-b-[3px] outline-none p-1 w-full" value={passwordValue} onChange={e => setPasswordValue(e.target.value)} required />
-								<FormError errorMessage={emailError} />
+								<FormError errorMessage={passwordError} />
 							</div>
 						</div>
 						<div className="flex justify-between pb-8">
@@ -54,7 +76,7 @@ const Login = () => {
 								<input type="checkbox" id="rememberMe" />
 								<label className="ml-4 font-medium" htmlFor="rememberMe">Remember Me?</label>
 							</div>
-							<a className="text-[#EB4710] underline-offset-1 underline font-medium">Forgot Password?</a>
+							<a className="text-[#EB4710] underline-offset-1 underline font-medium cursor-pointer" onClick={forgotPassword}>Forgot Password?</a>
 						</div>
 						<div className="flex justify-center mt-12">
 							<button type="submit" className="py-2 px-12 text-white font-bold text-lg" style={{

@@ -36,7 +36,7 @@ const SignUp = () => {
 		setConfirmPasswordError("");
 
 		updateUser(response.data);
-		alert(`Successfully registered new account ${emailValue}`);
+		alert(`Successfully registered new account ${emailValue}. Log into account first.`);
 		navigate("/login");
 	}
 

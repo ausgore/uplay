@@ -132,7 +132,7 @@ namespace Uplay.Controllers
 			context.PasswordResetCodes.Remove(resetCodeEntry);
 			context.SaveChanges();
 
-			return Ok(new { message = "Password has been successfully reset." });
+			return Ok(new { message = "Password has been successfully reset.", user });
 		}
 
 		// Generating a new token for forget-password sequence
@@ -140,7 +140,10 @@ namespace Uplay.Controllers
 		{
 			var tokenByte = new byte[32];
 			RandomNumberGenerator.Fill(tokenByte);
-			return Convert.ToBase64String(tokenByte);
+			return Convert.ToBase64String(tokenByte)
+				.Replace('+', '-')
+				.Replace('/', '_')
+				.TrimEnd('=');
 		}
 	}	
 }	
