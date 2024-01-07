@@ -20,5 +20,6 @@ namespace Uplay
 
 		public required DbSet<User> Users { get; set; }
 		public required DbSet<PasswordResetCode> PasswordResetCodes { get; set; }
+		public required DbSet<Cart> Carts { get; set; }
 	}
 }

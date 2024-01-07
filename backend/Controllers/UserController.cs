@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Uplay.Models;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity.Data;
+using Uplay.Dtos;
 
 namespace Uplay.Controllers
 {
@@ -62,7 +63,7 @@ namespace Uplay.Controllers
 			request.Email = request.Email.Trim().ToLower();
 			request.Password = request.Password.Trim();
 			string message = "Email or password is incorrect.";
-			
+
 			// Get an existing user in the database with the same email
 			// If there isn't an existing user, return a bad request
 			var user = context.Users.Where(u => u.Email == request.Email).FirstOrDefault();
@@ -102,7 +103,7 @@ namespace Uplay.Controllers
 			};
 			context.PasswordResetCodes.Add(passwordResetCode);
 			context.SaveChanges();
-			
+
 			return Ok(passwordResetCode);
 		}
 
@@ -135,6 +136,70 @@ namespace Uplay.Controllers
 			return Ok(new { message = "Password has been successfully reset.", user });
 		}
 
+		[HttpGet("cart/{id}")]
+		public IActionResult GetCarts(int id)
+		{
+			var user = context.Users.Where(u => u.Id == id).FirstOrDefault();
+			if (user == null) return NotFound();
+			
+			var carts = context.Carts.Where(c => c.UserId == id).ToList();
+			return Ok(carts);
+		}
+
+		// TODO: CART Change after model
+		[HttpPost("add-to-cart")]
+		public IActionResult AddToCart(CartCreateDto data)
+		{
+			var user = context.Users.Where(u => u.Id == data.UserId).FirstOrDefault();
+			if (user == null) return NotFound();
+
+			var cart = new Cart()
+			{
+				UserId = data.UserId,
+				Name = data.Name,
+				NtucQuantity = data.NtucQuantity ?? 0,
+				GuestQuantity = data.GuestQuantity ?? 0,
+			};
+
+			context.Carts.Add(cart);
+			context.SaveChanges();
+
+			return Ok(cart);
+		}
+
+		[HttpPut("update-cart/{id}")]
+		public IActionResult UpdateCart([FromRoute] int id, [FromBody] CartUpdateDto data)
+		{
+			var cart = context.Carts.Where(c => c.Id == id).FirstOrDefault();
+			if (cart == null)
+			{
+				return NotFound(new { message = "Cart cannot be found with ID." });
+			}
+
+			if (data.GuestQuantity.HasValue && data.GuestQuantity.Value != cart.GuestQuantity) cart.GuestQuantity = data.GuestQuantity.Value;
+			if (data.NtucQuantity.HasValue && data.NtucQuantity.Value != cart.NtucQuantity) cart.NtucQuantity = data.NtucQuantity.Value;
+
+			context.Carts.Update(cart);
+			context.SaveChanges();
+
+			return Ok(cart);
+		}
+
+		[HttpDelete("delete-cart/{id}")]
+		public IActionResult DeleteCart([FromRoute] int id)
+		{
+			var cart = context.Carts.Where(c => c.Id == id).FirstOrDefault();
+			if (cart == null)
+			{
+				return NotFound();
+			}
+
+			context.Carts.Remove(cart);
+			context.SaveChanges();
+			return Ok(new { message = "Deleted" });
+		}
+
+
 		// Generating a new token for forget-password sequence
 		private static string GenerateResetCode()
 		{
@@ -145,5 +210,5 @@ namespace Uplay.Controllers
 				.Replace('/', '_')
 				.TrimEnd('=');
 		}
-	}	
-}	
+	}
+}

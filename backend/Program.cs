@@ -1,6 +1,9 @@
 // dotnet ef migrations add MigrationTitle
 // dotnet ef database update
+using Stripe;
 using Uplay;
+
+StripeConfiguration.ApiKey = "sk_test_51NnHKDLBQ2JqxfdO9AWFvR1J8IwPokQ9lhQ7Ngbkj8B23l6eYCHWJaztXUw47gQAHiZqz8AXriG2gjt9p6GJdKx9006dwBxhRS";
 
 var builder = WebApplication.CreateBuilder(args);
 

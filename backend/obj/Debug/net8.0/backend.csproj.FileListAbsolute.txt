@@ -128,3 +128,16 @@ C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\runtimes\win-x64\
 C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\runtimes\win-x86\native\e_sqlite3.dll
 C:\Users\Glenn\Documents\GitHub\uplay\backend\obj\Debug\net8.0\backend.sourcelink.json
 C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\Stripe.net.dll
+C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\System.Configuration.ConfigurationManager.dll
+C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\System.Drawing.Common.dll
+C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\System.Security.Cryptography.ProtectedData.dll
+C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\System.Security.Permissions.dll
+C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\System.Windows.Extensions.dll
+C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
+C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
+C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
+C:\Users\Glenn\Documents\GitHub\uplay\backend\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
