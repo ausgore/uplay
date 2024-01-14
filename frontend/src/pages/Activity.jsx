@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Nav from "../components/Nav";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useUser } from "../contexts/UserContext";
+import Star from "../assets/images/star.png";
+import BlankStar from "../assets/images/blankstar.png";
 
 // TODO: Export max-w-[1300px] mx-auto px-4 to its own "container" class
 // Create separate button component
@@ -10,32 +12,69 @@ import { useUser } from "../contexts/UserContext";
 const Activity = () => {
 	const user = useUser();
 	const navigate = useNavigate();
-	const ntucPrice = 49.9;
-	const [ntucQuantity, setNTUCQuantity] = useState(0);
-	const guestPrice = 54.9;
-	const [guestQuantity, setGuestQuantity] = useState(0);
+	const { id } = useParams();
+	const [activity, setActivity] = useState();
+
+	const [review, setReview] = useState("");
+	const [rating, setRating] = useState(1);
+
+	useEffect(() => {
+		(async () => {
+			const response = await axios.get(`http://localhost:5021/activity?id=${id}`).catch(e => e.response);
+			if (response.status != 200 || !response.data[0]) {
+				alert(`(DEBUG) No activity with ID ${id}. Returning to sign in page.`);
+				navigate("/");
+			}
+			console.log(response.data[0]);
+			setActivity(response.data[0]);
+		})();
+	}, [id]);
+
+	const [childQuantity, setChildQuantity] = useState(0);
+	const [adultQuantity, setAdultQuantity] = useState(0);
 
 	const addToCart = async () => {
-		if (ntucQuantity + guestQuantity == 0) return alert("You cannot add nothing to your cart.");
+		if (childQuantity + adultQuantity == 0) return alert("You cannot add nothing to your cart.");
 		if (!user) return alert("You must be logged in to be able to add to cart.");
 
-		await axios.post("http://localhost:5021/user/add-to-cart", {
+		const response = await axios.post("http://localhost:5021/user/add-to-cart", {
 			userId: user.id,
-			name: "Hot Yoga Studio LAVA @ Great World City",
-			ntucQuantity: ntucQuantity,
-			guestQuantity: guestQuantity
-		});
-		alert(`You have added Hot Yoga Studio to cart with NTUC: ${ntucQuantity}, Guest: ${guestQuantity}`);
+			childQuantity,
+			adultQuantity,
+			activityId: activity.id
+		}).catch(e => e.response);
+
+		if (response.status != 200) return alert("An error occurred trying to add this to cart");
+
+		alert(`You have ${activity.name} to cart with Child: ${childQuantity}, Adult: ${adultQuantity}`);
 		navigate("/cart");
+	}
+
+	const submitReview = async () => {
+		if (!user) return alert("You cannot submit a review while logged out.");
+		if (!review?.trim().length) return alert("You cannot leave an empty review.");
+
+		const response = await axios.post(`http://localhost:5021/activity/submit-review/${activity.id}`, {
+			userId: user.id,
+			rating,
+			content: review
+		}).catch(e => e.response);
+		if (response.status != 200) return alert("An error occurred trying to submit this review");
+
+		alert("Review submitted!");
+		const { data: activities } = await axios.get(`http://localhost:5021/activity?id=${id}`).catch(e => e.response);
+		setActivity(activities[0]);
+		setReview("");
+		setRating(1);
 	}
 
 	return <>
 		<Nav />
-		<div className="max-w-[1300px] mx-auto px-4 pt-24">
+		<div className="max-w-[1300px] mx-auto px-4 pt-32">
 			{/* Header */}
 			<div className="mt-2 mb-3 flex flex-col lg:flex-row gap-2 lg:gap-12">
 				{/* Title */}
-				<h1 className="text-lg md:text-2xl font-bold">Hot Yoga Studio LAVA @ Great World City</h1>
+				<h1 className="text-lg md:text-2xl font-bold">{activity?.name}</h1>
 				{/* Tags */}
 				<div className="flex flex-row max-w-full gap-3">
 					<div className="text-white font-bold items-center flex px-4 py-2 lg:py-1 text-xs lg:text-base" style={{
@@ -48,7 +87,7 @@ const Activity = () => {
 				</div>
 			</div>
 			{/* Address */}
-			<p className="font-medium">1 Kim Seng Promenade #02-102/103 Great World City, Singapore 237994</p>
+			<p className="font-medium">PLACEHOLDER: 1 Kim Seng Promenade #02-102/103 Great World City, Singapore 237994 (REAL VALUE: {activity?.postalCode})</p>
 			{/* Image, Description and Cart */}
 			<div className="flex flex-col xl:flex-row justify-between mt-6">
 				{/* LEFT */}
@@ -65,33 +104,33 @@ const Activity = () => {
 					<h2 className="font-semibold text-lg mb-4">Select Option</h2>
 					{/* Options */}
 					<div className="flex flex-col gap-6">
-						{/* NTUC Member Bar */}
-						<div className="flex flex-row px-4 py-2 justify-between bg-[#FF8541] rounded-lg gap-20 items-center" style={{ boxShadow: "0px 1px 4px 2px rgba(0, 0, 0, 0.40)" }}>
-							<p className="font-bold">NTUC Member</p>
+						{/* Child Price */}
+						{activity?.childPrice && <div className="flex flex-row px-4 py-2 justify-between bg-[#FF8541] rounded-lg gap-20 items-center" style={{ boxShadow: "0px 1px 4px 2px rgba(0, 0, 0, 0.40)" }}>
+							<p className="font-bold">Child</p>
 							<div className="flex flex-row items-center">
 								{/* Price, do not multiply */}
-								<p className="font-medium mr-4">S${ntucPrice.toFixed(2)}</p>
-								<button onClick={() => setNTUCQuantity(q => q == 0 ? 0 : q - 1)}>-</button>
-								<span className="px-2 font-medium">{ntucQuantity}</span>
-								<button onClick={() => setNTUCQuantity(q => q + 1)}>+</button>
+								<p className="font-medium mr-4">S${activity?.childPrice.toFixed(2)}</p>
+								<button onClick={() => setChildQuantity(q => q == 0 ? 0 : q - 1)}>-</button>
+								<span className="px-2 font-medium">{childQuantity}</span>
+								<button onClick={() => setChildQuantity(q => q + 1)}>+</button>
 							</div>
-						</div>
-						{/* Guest Bar */}
-						<div className="flex flex-row px-4 py-2 justify-between rounded-lg gap-20 items-center" style={{ boxShadow: "0px 1px 4px 2px rgba(0, 0, 0, 0.40)" }}>
-							<p className="font-bold">Guest</p>
+						</div>}
+						{/* Adult Price */}
+						{activity?.adultPrice && <div className="flex flex-row px-4 py-2 justify-between rounded-lg gap-20 items-center" style={{ boxShadow: "0px 1px 4px 2px rgba(0, 0, 0, 0.40)" }}>
+							<p className="font-bold">Adult</p>
 							<div className="flex flex-row items-center">
 								{/* Price, do not multiply */}
-								<p className="font-medium mr-4">S${guestPrice.toFixed(2)}</p>
-								<button onClick={() => setGuestQuantity(q => q == 0 ? 0 : q - 1)}>-</button>
-								<span className="px-2 font-medium">{guestQuantity}</span>
-								<button onClick={() => setGuestQuantity(q => q + 1)}>+</button>
+								<p className="font-medium mr-4">S${activity?.adultPrice.toFixed(2)}</p>
+								<button onClick={() => setAdultQuantity(q => q == 0 ? 0 : q - 1)}>-</button>
+								<span className="px-2 font-medium">{adultQuantity}</span>
+								<button onClick={() => setAdultQuantity(q => q + 1)}>+</button>
 							</div>
-						</div>
+						</div>}
 					</div>
 					{/* Total */}
 					<p className="text-sm mt-6">Total</p>
 					<div className="flex flex-row justify-between">
-						<p className="text-3xl font-semibold">S$ {((ntucQuantity * ntucPrice) + (guestQuantity * guestPrice)).toFixed(2)}</p>
+						<p className="text-3xl font-semibold">S$ {(((childQuantity ?? 0) * activity?.childPrice) + ((adultQuantity ?? 0) * activity?.adultPrice)).toFixed(2)}</p>
 						<button onClick={addToCart} className="py-2 px-4 text-white font-bold text-lg" style={{
 							borderRadius: "10px",
 							background: "linear-gradient(109deg, #EB4710 20.67%, #FBDA01 144.1%)",
@@ -102,26 +141,68 @@ const Activity = () => {
 					</div>
 				</div>
 			</div>
-			<section className="mt-8 lg:mt-16 max-w-[716px]">
+			<section className="mt-8 lg:mt-16 max-w-[716px] mb-20">
 				{/* Highlights */}
 				<div className="flex flex-row items-center">
-					<h1 className="font-bold text-lg mb-2">Highlights</h1>
+					<h1 className="font-bold text-lg mb-2">Description</h1>
 					<div className="flex-grow bg-[#EB4710] h-[2px] mx-4"></div>
 				</div>
-				<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-
-				<div className="flex flex-row items-center mt-12">
-					<h1 className="font-bold text-lg mb-2">What's Included</h1>
-					<div className="flex-grow bg-[#EB4710] h-[2px] mx-4"></div>
-				</div>
-				<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-
-				<div className="flex flex-row items-center mt-12">
-					<h1 className="w-fit font-bold text-lg mb-2">Terms and Conditions</h1>
-					<div className="flex-grow bg-[#EB4710] h-[2px] mx-4"></div>
-				</div>
-				<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+				<p>{activity?.description}</p>
 			</section>
+			<hr className="my-12 border-[1px]" />
+			<div className="my-4 justify-center text-center w-full items-center">
+				<h1 className="md:text-2xl font-bold text-xl mb-4">Let's see what others thought about it...</h1>
+				<div className="flex flex-row lg:text-center justify-center items-center w-full">
+					{/* Average rating */}
+					{activity?.reviews.length > 0 && <h1 className="font-bold text-3xl">{(activity?.reviews.reduce((a, b) => a + b.rating, 0)/activity?.reviews.length).toFixed(1)}</h1>}
+					{activity?.reviews.length == 0 && <h1 className="font-bold text-3xl">0.0</h1>}
+					<img src={(activity?.reviews.reduce((a, b) => a + b.rating, 0)/activity?.reviews.length) >= 1 ? Star : BlankStar} className="w-[30px] h-[30px] ml-4" />
+					<img src={(activity?.reviews.reduce((a, b) => a + b.rating, 0)/activity?.reviews.length) >= 2 ? Star : BlankStar} className="w-[30px] h-[30px] ml-1" />
+					<img src={(activity?.reviews.reduce((a, b) => a + b.rating, 0)/activity?.reviews.length) >= 3 ? Star : BlankStar} className="w-[30px] h-[30px] ml-1" />
+					<img src={(activity?.reviews.reduce((a, b) => a + b.rating, 0)/activity?.reviews.length) >= 4 ? Star : BlankStar} className="w-[30px] h-[30px] ml-1" />
+					<img src={(activity?.reviews.reduce((a, b) => a + b.rating, 0)/activity?.reviews.length) >= 5 ? Star : BlankStar} className="w-[30px] h-[30px] ml-1" />
+				</div>
+				{/* Number of reviews */}
+				<p className="font-semibold mt-1">Based on {activity?.reviews.length} reviews</p>
+				<div className="max-w-[800px] mx-auto mt-4">
+					<h1 className="md:text-2xl font-bold text-xl text-left">Write your review</h1>
+					<div className="flex flex-row mb-4 mt-2">
+						<img src={Star} className="w-[25px] h-[25px] mr-1" onClick={e => setRating(1)} />
+						<img src={rating >= 2 ? Star : BlankStar} className="w-[25px] h-[25px] mr-1 cursor-pointer" onClick={e => setRating(2)} />
+						<img src={rating >= 3 ? Star : BlankStar} className="w-[25px] h-[25px] mr-1 cursor-pointer" onClick={e => setRating(3)} />
+						<img src={rating >= 4 ? Star : BlankStar} className="w-[25px] h-[25px] mr-1 cursor-pointer" onClick={e => setRating(4)} />
+						<img src={rating >= 5 ? Star : BlankStar} className="w-[25px] h-[25px] mr-1 cursor-pointer" onClick={e => setRating(5)} />
+					</div>
+					{/* Writing a review */}
+					<textarea className="outline-none border w-full h-[166px] rounded-lg px-4 py-2 resize-none" placeholder="Write a review..." value={review} onChange={e => setReview(e.target.value)} />
+					{/* Submit review */}
+					<button className="rounded-lg max-w-[200px] text-white font-semibold text-sm px-4 py-2 mt-4" style={{ background: "linear-gradient(102deg, #EB4710 25.27%, #F8BA05 93.93%)", boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)" }} onClick={submitReview}>Submit Review</button>
+				</div>
+			</div>
+
+			<hr className="my-12 border-[#EB4710] border-[1px] mx-auto max-w-[800px]" />
+			{/* Reviews */}
+			<div className="max-w-[800px] mx-auto mb-20">
+				{activity?.reviews.map(review => {
+					// const response = await axios.get(`http://localhost:5021/user`);
+					// const reviewer = response.data.filter(u => u.id == review.userId)[0];
+
+					return <div className="max-w-[800px] mb-10">
+						<div className="flex">
+							{/* Stars */}
+							<img src={review.rating >= 1 ? Star : BlankStar} className="w-[20px] h-[20px] mr-1" />
+							<img src={review.rating >= 2 ? Star : BlankStar} className="w-[20px] h-[20px] mr-1" />
+							<img src={review.rating >= 3 ? Star : BlankStar} className="w-[20px] h-[20px] mr-1" />
+							<img src={review.rating >= 4 ? Star : BlankStar} className="w-[20px] h-[20px] mr-1" />
+							<img src={review.rating >= 5 ? Star : BlankStar} className="w-[20px] h-[20px] mr-1" />
+						</div>
+						{/* Text */}
+						<p className="font-bold mt-2">{review.content}</p>
+						{/* Name */}
+						<p className="font-medium">Firstname Lastname</p>
+					</div>
+				})}
+			</div>
 		</div>
 	</>;
 }

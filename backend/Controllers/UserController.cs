@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Uplay.Models;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity.Data;
-using Uplay.Dtos;
+using Microsoft.EntityFrameworkCore;
 
 namespace Uplay.Controllers
 {
@@ -26,8 +26,7 @@ namespace Uplay.Controllers
 			{
 				result = result.Where(u => u.Email.Contains(search));
 			}
-			var list = result.OrderByDescending(u => u.CreatedAt).ToList();
-			return Ok(list);
+			return Ok(result.ToList());
 		}
 
 		// Registering a new user
@@ -47,8 +46,7 @@ namespace Uplay.Controllers
 			{
 				Email = request.Email.Trim().ToLower(),
 				// Hash password in the database
-				Password = BCrypt.Net.BCrypt.HashPassword(request.Password.Trim()),
-				UpdatedAt = DateTime.Now
+				Password = BCrypt.Net.BCrypt.HashPassword(request.Password.Trim())
 			};
 
 			context.Users.Add(user);
@@ -136,39 +134,42 @@ namespace Uplay.Controllers
 			return Ok(new { message = "Password has been successfully reset.", user });
 		}
 
-		[HttpGet("cart/{id}")]
-		public IActionResult GetCarts(int id)
+		[HttpGet("cart/{userId}")]
+		public IActionResult GetCarts(int userId)
 		{
-			var user = context.Users.Where(u => u.Id == id).FirstOrDefault();
+			var user = context.Users.Where(u => u.Id == userId).FirstOrDefault();
 			if (user == null) return NotFound();
-			
-			var carts = context.Carts.Where(c => c.UserId == id).ToList();
-			return Ok(carts);
+
+			var cart = context.Carts.Where(c => c.UserId == userId).Include(c => c.Activity);
+			return Ok(cart.ToList());
 		}
 
-		// TODO: CART Change after model
 		[HttpPost("add-to-cart")]
-		public IActionResult AddToCart(CartCreateDto data)
+		public IActionResult AddToCart(Cart data)
 		{
 			var user = context.Users.Where(u => u.Id == data.UserId).FirstOrDefault();
 			if (user == null) return NotFound();
 
+			var activity = context.Activities.Where(a => a.Id == data.ActivityId).FirstOrDefault();
+			if (activity == null) return NotFound();
+
 			var cart = new Cart()
 			{
 				UserId = data.UserId,
-				Name = data.Name,
-				NtucQuantity = data.NtucQuantity ?? 0,
-				GuestQuantity = data.GuestQuantity ?? 0,
+				ChildQuantity = data.ChildQuantity,
+				AdultQuantity = data.AdultQuantity,
+				ActivityId = data.ActivityId
 			};
 
 			context.Carts.Add(cart);
+			user.Cart.Add(cart);
 			context.SaveChanges();
 
 			return Ok(cart);
 		}
 
 		[HttpPut("update-cart/{id}")]
-		public IActionResult UpdateCart([FromRoute] int id, [FromBody] CartUpdateDto data)
+		public IActionResult UpdateCart([FromRoute] int id, [FromBody] Cart data)
 		{
 			var cart = context.Carts.Where(c => c.Id == id).FirstOrDefault();
 			if (cart == null)
@@ -176,8 +177,8 @@ namespace Uplay.Controllers
 				return NotFound(new { message = "Cart cannot be found with ID." });
 			}
 
-			if (data.GuestQuantity.HasValue && data.GuestQuantity.Value != cart.GuestQuantity) cart.GuestQuantity = data.GuestQuantity.Value;
-			if (data.NtucQuantity.HasValue && data.NtucQuantity.Value != cart.NtucQuantity) cart.NtucQuantity = data.NtucQuantity.Value;
+			if (data.AdultQuantity.HasValue && data.AdultQuantity.Value != cart.AdultQuantity) cart.AdultQuantity = data.AdultQuantity;
+			if (data.ChildQuantity.HasValue && data.ChildQuantity.Value != cart.ChildQuantity) cart.ChildQuantity = data.ChildQuantity;
 
 			context.Carts.Update(cart);
 			context.SaveChanges();
@@ -194,7 +195,11 @@ namespace Uplay.Controllers
 				return NotFound();
 			}
 
+			var user = context.Users.Where(u => u.Id == cart.UserId).FirstOrDefault();
+			if (user == null) return NotFound();
+
 			context.Carts.Remove(cart);
+			user.Cart.Remove(cart);
 			context.SaveChanges();
 			return Ok(new { message = "Deleted" });
 		}

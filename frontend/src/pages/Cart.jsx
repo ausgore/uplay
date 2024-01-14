@@ -38,7 +38,7 @@ const Cart = () => {
 
 	return <>
 		<Nav />
-		<div className="max-w-[1300PX] mx-auto px-4 pt-24">
+		<div className="max-w-[1300PX] mx-auto px-4 pt-32">
 			{/* Header */}
 			<div className="mt-2 mb-3 gap-2 lg:gap-12 flex flex-row justify-between">
 				{/* Title */}
@@ -60,34 +60,34 @@ const Cart = () => {
 							setProducts(response.data);
 						}
 
-						const incNtuc = async () => {
-							await axios.put(`http://localhost:5021/user/update-cart/${product.id}`, { ntucQuantity: product.ntucQuantity + 1 });
+						const incChild = async () => {
+							await axios.put(`http://localhost:5021/user/update-cart/${product.id}`, { childQuantity: product.childQuantity + 1, adultQuantity: product.adultQuantity });
 							const response = await axios.get(`http://localhost:5021/user/cart/${user.id}`);
 							setProducts(response.data);
 						}
 
-						const decNtuc = async () => {
-							if (product.ntucQuantity - 1 == 0 && product.guestQuantity == 0) remove();
+						const decChild = async () => {
+							if (product.childQuantity - 1 == 0 && !product.adultQuantity) remove();
 							else {
-								if (product.ntucQuantity > 0) {
-									await axios.put(`http://localhost:5021/user/update-cart/${product.id}`, { ntucQuantity: product.ntucQuantity - 1 });
+								if (product.childQuantity > 0) {
+									await axios.put(`http://localhost:5021/user/update-cart/${product.id}`, { childQuantity: product.childQuantity - 1, adultQuantity: product.adultQuantity });
 									const response = await axios.get(`http://localhost:5021/user/cart/${user.id}`);
 									setProducts(response.data);
 								}
 							}
 						}
 
-						const incGuest = async () => {
-							await axios.put(`http://localhost:5021/user/update-cart/${product.id}`, { guestQuantity: product.guestQuantity + 1 });
+						const incAdult = async () => {
+							await axios.put(`http://localhost:5021/user/update-cart/${product.id}`, { adultQuantity: product.adultQuantity + 1, childQuantity: product.childQuantity });
 							const response = await axios.get(`http://localhost:5021/user/cart/${user.id}`);
 							setProducts(response.data);
 						}
 
-						const decGuest = async () => {
-							if (product.ntucQuantity == 0 && product.guestQuantity - 1 == 0) remove();
+						const decAdult = async () => {
+							if (!product.childQuantity && product.adultQuantity - 1 == 0) remove();
 							else {
-								if (product.guestQuantity > 0) {
-									await axios.put(`http://localhost:5021/user/update-cart/${product.id}`, { guestQuantity: product.guestQuantity - 1 });
+								if (product.adultQuantity > 0) {
+									await axios.put(`http://localhost:5021/user/update-cart/${product.id}`, { adultQuantity: product.adultQuantity - 1, childQuantity: product.childQuantity });
 									const response = await axios.get(`http://localhost:5021/user/cart/${user.id}`);
 									setProducts(response.data);
 								}
@@ -104,7 +104,7 @@ const Cart = () => {
 								<div className="flex flex-col justify-between">
 									<div>
 										{/* Title */}
-										<h1 className="font-bold text-lg">{product.name.substr(0, 25)}{product.name.length > 25 ? "..." : ""}</h1>
+										<h1 className="font-bold text-lg">{product.activity.name.substr(0, 25)}{product.activity.name.length > 25 ? "..." : ""}</h1>
 										{/* Date */}
 										<p className="italic">12 January 2024</p>
 									</div>
@@ -115,28 +115,28 @@ const Cart = () => {
 							<div>
 								<table>
 									<tbody>
-										<tr>
-											<td className="font-medium">NTUC Member</td>
-											<td className="px-4">S$49.90</td>
+										{product.activity.childPrice && <tr>
+											<td className="font-medium">Child</td>
+											<td className="px-4">S${product.activity.childPrice.toFixed(2)}</td>
 											<td>
 												<div className="flex flex-row">
-													<button onClick={decNtuc}>-</button>
-													<span className="px-2 font-medium">{product.ntucQuantity}</span>
-													<button onClick={incNtuc}>+</button>
+													<button onClick={decChild}>-</button>
+													<span className="px-2 font-medium">{product.childQuantity}</span>
+													<button onClick={incChild}>+</button>
 												</div>
 											</td>
-										</tr>
-										<tr>
-											<td className="font-medium">Guest</td>
-											<td className="px-4">S$54.90</td>
+										</tr>}
+										{product.activity.adultPrice && <tr>
+											<td className="font-medium">Adult</td>
+											<td className="px-4">S${product.activity.adultPrice.toFixed(2)}</td>
 											<td>
 												<div className="flex flex-row">
-													<button onClick={decGuest}>-</button>
-													<span className="px-2 font-medium">{product.guestQuantity}</span>
-													<button onClick={incGuest}>+</button>
+													<button onClick={decAdult}>-</button>
+													<span className="px-2 font-medium">{product.adultQuantity}</span>
+													<button onClick={incAdult}>+</button>
 												</div>
 											</td>
-										</tr>
+										</tr>}
 									</tbody>
 								</table>
 							</div>
@@ -149,15 +149,15 @@ const Cart = () => {
 						<tbody>
 							<tr>
 								<td className="font-semibold">Subtotal</td>
-								<td className="font-semibold text-right">S${products.reduce((a, p) => a + (p.ntucQuantity * 49.9) + (p.guestQuantity * 54.9), 0).toFixed(2)}</td>
+								<td className="font-semibold text-right">S${products.reduce((a, p) => a + (p.adultQuantity * p.activity.adultPrice) + (p.childQuantity * p.activity.childPrice), 0).toFixed(2)}</td>
 							</tr>
 							{appliedCouponCode && <tr className="text-[#096A00] text-sm font-semibold">
 								<td className="pr-7">CODE : {appliedCouponCode.toUpperCase()} (20%OFF)</td>
-								<td className="text-right">-S${(products.reduce((a, p) => a + (p.ntucQuantity * 49.9) + (p.guestQuantity * 54.9), 0) * 0.2).toFixed(2)}</td>
+								<td className="text-right">-S${(products.reduce((a, p) => a + (p.adultQuantity * p.activity.adultPrice) + (p.childQuantity * p.activity.childPrice), 0) * 0.2).toFixed(2)}</td>
 							</tr>}
 							<tr>
 								<td className="font-bold text-lg pt-8">Total</td>
-								<td className="font-bold text-lg pt-8 text-right">S${(products.reduce((a, p) => a + (p.ntucQuantity * 49.9) + (p.guestQuantity * 54.9), 0) * (appliedCouponCode ? 0.8 : 1)).toFixed(2)}</td>
+								<td className="font-bold text-lg pt-8 text-right">S${(products.reduce((a, p) => a + (p.adultQuantity * p.activity.adultPrice) + (p.childQuantity * p.activity.childPrice), 0) * (appliedCouponCode ? 0.8 : 1)).toFixed(2)}</td>
 							</tr>
 						</tbody>
 					</table>

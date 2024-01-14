@@ -8,7 +8,8 @@ import { UserProvider } from "./contexts/UserContext";
 import ResetPassword from "./pages/ResetPassword";
 import Activity from "./pages/Activity";
 import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
+import CreateActivity from "./pages/CreateActivity";
+import Activities from "./pages/Activites";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
@@ -18,9 +19,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 					<Route path="/" element={<SignUp />} />
 					<Route path="/login" element={<Login />} />
 					<Route path="/reset-password/:token" element={<ResetPassword />} />
-					<Route path="/activities" element={<Activity />} />
+					<Route path="/activities" element={<Activities />} />
+					<Route path="/activities/:id" element={<Activity />} />
 					<Route path="/cart" element={<Cart />} />
-					<Route path="/checkout" element={<Checkout />} />
+
+					<Route path="/create-activity" element={<CreateActivity />} />
 				</Routes>
 			</BrowserRouter>
 		</UserProvider>

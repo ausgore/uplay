@@ -4,25 +4,30 @@ using System.Text.Json.Serialization;
 
 namespace Uplay.Models
 {
-	public class Cart
+	public class Review
 	{
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
-		public int? ChildQuantity { get; set; } = 0;
-
-		public int? AdultQuantity { get; set; } = 0;
+		[ForeignKey("User")]
+		public int UserId { get; set; }
+		
+		public User? User { get; set; }
 
 		[ForeignKey("Activity")]
 		public int ActivityId { get; set; }
 
+		[JsonIgnore]
 		public virtual Activity? Activity { get; set; }
 
-		[ForeignKey("User")]
-		public int UserId { get; set; }
+		// [ForeignKey("Booking")]
+		// public int BookingId { get; set; }
 
-		[JsonIgnore]
-		public User? User { get; set; }
+		// public virtual Booking? Booking { get; set; }
+
+		public int Rating { get; set; } = 1;
+
+		public string Content { get; set; } = string.Empty;
 	}
 }

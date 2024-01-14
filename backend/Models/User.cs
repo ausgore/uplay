@@ -9,16 +9,27 @@ namespace Uplay.Models
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
-		[Required]
 		public string Email { get; set; } = string.Empty;
 
-		[Required]
 		public string Password { get; set; } = string.Empty;
 
-		[Column(TypeName = "datetime")]
-		public DateTime CreatedAt { get; private set; } = DateTime.Now;
+		public virtual ICollection<Cart> Cart { get; set; } = new List<Cart>();
+	}
+
+	public class PasswordResetCode
+	{
+		[Key]
+		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+		public int Id { get; set; }
+
+		[ForeignKey("User")]
+		public int UserId { get; set; }
+
+		public string ResetCode { get; set; } = string.Empty;
 
 		[Column(TypeName = "datetime")]
-		public DateTime UpdatedAt { get; set; } = DateTime.Now;
+		public DateTime ExpirationDate { get; set; }
+	
+		public User? User { get; set; }
 	}
 }
