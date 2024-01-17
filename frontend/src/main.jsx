@@ -10,6 +10,8 @@ import Activity from "./pages/Activity";
 import Cart from "./pages/Cart";
 import CreateActivity from "./pages/CreateActivity";
 import Activities from "./pages/Activites";
+import UpdateActivity from "./pages/UpdateActivity";
+import ManageActivities from "./pages/ManageActivities";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
@@ -24,6 +26,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 					<Route path="/cart" element={<Cart />} />
 
 					<Route path="/create-activity" element={<CreateActivity />} />
+					<Route path="/manage-activities" element={<ManageActivities />} />
+					<Route path="/update-activity/:id" element={<UpdateActivity />} />
 				</Routes>
 			</BrowserRouter>
 		</UserProvider>

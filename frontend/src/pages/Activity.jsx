@@ -25,7 +25,6 @@ const Activity = () => {
 				alert(`(DEBUG) No activity with ID ${id}. Returning to sign in page.`);
 				navigate("/");
 			}
-			console.log(response.data[0]);
 			setActivity(response.data[0]);
 		})();
 	}, [id]);

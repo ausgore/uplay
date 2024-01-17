@@ -16,7 +16,6 @@ const Activities = () => {
 		(async () => {
 			const response = await axios.get("http://localhost:5021/activity");
 			setActivities(response.data);
-			console.log(response.data);
 		})();
 	}, []);
 

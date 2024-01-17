@@ -51,6 +51,39 @@ namespace Uplay.Controllers
 			return Ok(activity);
 		}
 
+		[HttpDelete("delete/{activityId}")]
+		public IActionResult DeleteActivity(int activityId)
+		{
+			var activity = context.Activities.Where(a => a.Id == activityId).FirstOrDefault();
+			if (activity == null) return NotFound();
+
+			context.Activities.Remove(activity);
+			context.SaveChanges();
+			return Ok();
+		}
+
+		[HttpPut("update/{activityId}")]
+		public IActionResult UpdateActivity(int activityId, Activity data)
+		{
+			var activity = context.Activities.Where(a => a.Id == activityId)
+				.Include(a => a.Timeslots)
+				.Include(a => a.Tags)
+				.FirstOrDefault();
+			if (activity == null) return NotFound();
+
+			activity.Name = data.Name;
+			activity.PostalCode = data.PostalCode;
+			activity.ChildPrice = data.ChildPrice;
+			activity.AdultPrice = data.AdultPrice;
+			activity.Description = data.Description;
+			activity.IsDaily = data.IsDaily;
+			activity.StartingAt = data.StartingAt ?? null;
+			activity.EndingAt = data.EndingAt ?? null;
+			context.SaveChanges();
+
+			return Ok(activity);
+		}
+
 		[HttpPost("add-timeslot/{id}")]
 		public IActionResult AssignTimeslotToActivity(int id, [FromBody] ActivityTimeslot data)
 		{
@@ -103,6 +136,33 @@ namespace Uplay.Controllers
 				context.ActivityTags.Add(tag);
 			}
 			
+			context.SaveChanges();
+			return Ok(activity);
+		}
+
+		[HttpPut("set-tags/{activityId}")]
+		public IActionResult SetTagsToActivity(int activityId, [FromBody] List<ActivityTag> tags)
+		{
+			var activity = context.Activities.Where(a => a.Id == activityId).Include(a => a.Tags).FirstOrDefault();
+			if (activity == null) return NotFound(new { message = "hi" });
+
+			activity.Tags.Clear();
+			foreach (var tag in activity.Tags)
+			{
+				context.ActivityTags.Remove(tag);
+			}
+
+			foreach (var data in tags)
+			{
+				var tag = new ActivityTag()
+				{
+					Content = data.Content,
+					ActivityId = activityId
+				};
+				activity.Tags.Add(tag);
+				context.ActivityTags.Add(tag);
+			}
+
 			context.SaveChanges();
 			return Ok(activity);
 		}
