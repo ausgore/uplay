@@ -1,7 +1,6 @@
 import Logo from "../assets/images/logo.png";
 import Dance from "../assets/images/dance.png";
 import { Link, useNavigate } from "react-router-dom";
-import FormError from "../components/FormError";
 import { useState } from "react";
 import axios from "axios";
 import { useUserUpdate } from "../contexts/UserContext";
@@ -59,16 +58,16 @@ const Login = () => {
 					<form className="w-full max-w-[600px] lg:px-20" onSubmit={onSubmit} >
 						<div className="flex flex-col pb-8">
 							<label htmlFor="email" className="font-medium text-lg mb-1">Email</label>
-							<div className="flex flex-row items-center">
+							<div className="flex flex-col">
 								<input type="email" id="email" className="border-b-[#E6533F] border-b-[3px] outline-none p-1 w-full" value={emailValue} onChange={e => setEmailValue(e.target.value)} required />
-								<FormError errorMessage={emailError} />
+								<span className="text-sm italic text-red-500">{emailError}</span>
 							</div>
 						</div>
 						<div className="flex flex-col pb-8">
 							<label htmlFor="password" className="font-medium text-lg mb-1">Password</label>
-							<div className="flex flex-row items-center">
+							<div className="flex flex-col">
 								<input type="password" id="password" className="border-b-[#E6533F] border-b-[3px] outline-none p-1 w-full" value={passwordValue} onChange={e => setPasswordValue(e.target.value)} required />
-								<FormError errorMessage={passwordError} />
+								<span className="text-sm italic text-red-500">{passwordError}</span>
 							</div>
 						</div>
 						<div className="flex justify-between pb-8">

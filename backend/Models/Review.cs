@@ -21,11 +21,6 @@ namespace Uplay.Models
 		[JsonIgnore]
 		public virtual Activity? Activity { get; set; }
 
-		// [ForeignKey("Booking")]
-		// public int BookingId { get; set; }
-
-		// public virtual Booking? Booking { get; set; }
-
 		public int Rating { get; set; } = 1;
 
 		public string Content { get; set; } = string.Empty;

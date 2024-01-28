@@ -16,8 +16,13 @@ namespace Uplay.Models
 
 		[ForeignKey("Activity")]
 		public int ActivityId { get; set; }
+		
+		public string? Timeslot { get; set; } = string.Empty;
+		
+		public DateTime? BookedDate { get; set; }
 
 		public virtual Activity? Activity { get; set; }
+
 
 		[ForeignKey("User")]
 		public int UserId { get; set; }

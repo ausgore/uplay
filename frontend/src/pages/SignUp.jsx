@@ -1,7 +1,6 @@
 import Logo from "../assets/images/logo.png";
 import WholeKitchen from "../assets/images/kitchen.png";
 import { Link, useNavigate } from "react-router-dom";
-import FormError from "../components/FormError";
 import { useState } from "react";
 import axios from "axios";
 import { useUserUpdate } from "../contexts/UserContext";
@@ -13,8 +12,13 @@ const SignUp = () => {
 	const today = new Date();
 	const minDate = new Date(today.getFullYear() - 4, today.getMonth(), today.getDate()).toISOString().split('T')[0];
 
+	const [nameValue, setNameValue] = useState("");
 	const [emailValue, setEmailValue] = useState("");
 	const [emailError, setEmailError] = useState("");
+	const [mobileValue, setMobileValue] = useState("");
+	const [mobileError, setMobileError] = useState("");
+	const [birthDateValue, setBirthDateValue] = useState();
+
 	const [passwordValue, setPasswordValue] = useState("");
 	const [passwordError, setPasswordError] = useState("");
 	const [confirmPasswordValue, setConfirmPasswordValue] = useState("");
@@ -28,12 +32,23 @@ const SignUp = () => {
 			return setConfirmPasswordError("Passwords do not match.");
 		}
 
-		const response = await axios.post("http://localhost:5021/user/register", { email: emailValue, password: passwordValue }).catch(e => e.response);
-		if (response.data.message) return setEmailError(response.data.message);
+		const response = await axios.post("http://localhost:5021/user/register", { 
+			email: emailValue, 
+			password: passwordValue,
+			mobileNumber: mobileValue,
+			name: nameValue,
+			birthDate: birthDateValue
+		}).catch(e => e.response);
+		if (response.data.email?.includes("already registered") || response.data.mobile) {
+			if (response.data.email?.includes("already registered")) setEmailError(response.data.email);
+			if (response.data.mobile) setMobileError(response.data.mobile);
+			return;
+		}
 
 		setEmailError("");
 		setPasswordError("");
 		setConfirmPasswordError("");
+		setMobileError("");
 
 		updateUser(response.data);
 		alert(`Successfully registered new account ${emailValue}. Log into account first.`);
@@ -56,18 +71,17 @@ const SignUp = () => {
 									<td>
 										<div className="flex flex-col md:mr-12 pb-4">
 											<label htmlFor="name" className="font-medium text-lg mb-1">Name</label>
-											<div className="flex flex-row items-center">
-												<input type="text" id="name" className="border-b-[#BA93FF] border-b-[3px] outline-none p-1 w-full" placeholder="John Doe" disabled />
-												<FormError />
+											<div className="flex flex-col">
+												<input type="text" id="name" className="border-b-[#BA93FF] border-b-[3px] outline-none p-1 w-full" placeholder="John Doe" required value={nameValue}onChange={e => setNameValue(e.target.value)} />
 											</div>
 										</div>
 									</td>
 									<td>
 										<div className="flex flex-col pb-4">
 											<label htmlFor="email" className="font-medium text-lg mb-1">Email</label>
-											<div className="flex flex-row items-center">
+											<div className="flex flex-col">
 												<input type="email" id="email" className="border-b-[#BA93FF] border-b-[3px] outline-none p-1 w-full" placeholder="john.doe@gmail.com" required value={emailValue} onChange={e => setEmailValue(e.target.value)} />
-												<FormError errorMessage={emailError} />
+												<span className="text-xs italic text-red-500">{emailError}</span>
 											</div>
 										</div>
 									</td>
@@ -76,18 +90,17 @@ const SignUp = () => {
 									<td>
 										<div className="flex flex-col md:mr-12 pb-4">
 											<label htmlFor="phone" className="font-medium text-lg mb-1">Phone Number</label>
-											<div className="flex flex-row items-center">
-												<input type="phone" id="phone" className="border-b-[#BA93FF] border-b-[3px] outline-none p-1 w-full" placeholder="8123 4567" disabled />
-												<FormError />
+											<div className="flex flex-col">
+												<input type="phone" id="phone" className="border-b-[#BA93FF] border-b-[3px] outline-none p-1 w-full" placeholder="81234567" value={mobileValue} onChange={e => setMobileValue(e.target.value)} maxLength={8} required />
+												<span className="text-xs italic text-red-500">{mobileError}</span>
 											</div>
 										</div>
 									</td>
 									<td>
 										<div className="flex flex-col pb-4">
 											<label htmlFor="birthdate" className="font-medium text-lg mb-1">Date of Birth</label>
-											<div className="flex flex-row items-center">
-												<input type="date" id="birthdate" className="border-b-[#BA93FF] border-b-[3px] outline-none p-1 w-full" max={minDate} disabled />
-												<FormError />
+											<div className="flex flex-col">
+												<input type="date" id="birthdate" className="border-b-[#BA93FF] border-b-[3px] outline-none p-1 w-full" max={minDate} value={birthDateValue} onChange={e => setBirthDateValue(e.target.value)} required />
 											</div>
 										</div>
 									</td>
@@ -96,18 +109,18 @@ const SignUp = () => {
 									<td>
 										<div className="flex flex-col md:mr-12 pb-4">
 											<label htmlFor="password" className="font-medium text-lg mb-1">Password</label>
-											<div className="flex flex-row items-center">
+											<div className="flex flex-col">
 												<input type="password" id="password" className="border-b-[#BA93FF] border-b-[3px] outline-none p-1 w-full" required value={passwordValue} onChange={e => setPasswordValue(e.target.value)} />
-												<FormError errorMessage={passwordError} />
+												<span className="text-sm italic text-red-500">{passwordError}</span>
 											</div>
 										</div>
 									</td>
 									<td>
 										<div className="flex flex-col pb-4">
 											<label htmlFor="confirm_password" className="font-medium text-lg mb-1">Confirm Password</label>
-											<div className="flex flex-row items-center">
+											<div className="flex flex-col">
 												<input type="password" id="confirm_password" className="border-b-[#BA93FF] border-b-[3px] outline-none p-1 w-full" required value={confirmPasswordValue} onChange={e => setConfirmPasswordValue(e.target.value)} />
-												<FormError errorMessage={confirmPasswordError} />
+												<p className="text-sm italic text-red-500">{confirmPasswordError}</p>
 											</div>
 										</div>
 									</td>

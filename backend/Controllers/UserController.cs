@@ -35,22 +35,61 @@ namespace Uplay.Controllers
 		{
 			// Get an existing user in the database with the same email
 			// If there is an existing user, return a bad request
-			var foundUser = context.Users.Where(u => u.Email == request.Email).FirstOrDefault();
-			if (foundUser != null)
+			var userWithEmail = context.Users.Where(u => u.Email == request.Email).FirstOrDefault();
+			var userWithMobile = context.Users.Where(u => u.MobileNumber == request.MobileNumber).FirstOrDefault();
+			
+			var errors = new Dictionary<string, string>();
+
+			if (userWithEmail != null || userWithMobile != null)
 			{
-				return BadRequest(new { message = "There is already an existing user with this email." });
+				if (userWithEmail != null) errors["email"] = "Email already registered.";
+				if (userWithMobile != null) errors["mobile"] = "Phone number already registered.";
+				else if (request.MobileNumber.Trim().Length != 8) errors["mobile"] = "Invalid mobile number provided.";
+				return BadRequest(errors);
 			}
 
 			// Create a new user to be stored in the database
 			var user = new User()
 			{
+				Name = request.Name.Trim(),
 				Email = request.Email.Trim().ToLower(),
 				// Hash password in the database
-				Password = BCrypt.Net.BCrypt.HashPassword(request.Password.Trim())
+				Password = BCrypt.Net.BCrypt.HashPassword(request.Password.Trim()),
+				MobileNumber = request.MobileNumber.Trim(),
+				BirthDate = request.BirthDate
 			};
+			Console.WriteLine(user);
 
 			context.Users.Add(user);
 			context.SaveChanges();
+			return Ok(user);
+		}
+
+		[HttpPut("update-user/{id}")]
+		public IActionResult UpdateUser(int id, User data)
+		{
+			var errors = new Dictionary<string, string>();
+			var user = context.Users.Where(u => u.Id == id).FirstOrDefault();
+			if (user == null) return NotFound();
+			
+			if (data.Email != null) {
+				var userWithEmail = context.Users.Where(u => u.Email == data.Email).FirstOrDefault();
+				if (userWithEmail != null && userWithEmail.Id != id) errors["email"] = "Email already registered";
+			}
+			if (data.MobileNumber != null) {
+				var userWithPhone = context.Users.Where(u => u.MobileNumber == data.MobileNumber).FirstOrDefault();
+				if (userWithPhone != null && userWithPhone.Id != id) errors["mobile"] = "Phone number already registered";
+				else if (data.MobileNumber.Length != 8) errors["mobile"] = "invalid mobile number provided";
+			}
+			if (errors.Count > 0) return BadRequest(errors);
+		
+
+			if (data.Name != null) user.Name = data.Name;
+			if (data.Email != null) user.Email = data.Email;
+			if (data.MobileNumber != null) user.MobileNumber = data.MobileNumber;
+			if (data.BirthDate != null) user.BirthDate = data.BirthDate;
+			context.SaveChanges();
+
 			return Ok(user);
 		}
 
@@ -158,7 +197,9 @@ namespace Uplay.Controllers
 				UserId = data.UserId,
 				ChildQuantity = data.ChildQuantity,
 				AdultQuantity = data.AdultQuantity,
-				ActivityId = data.ActivityId
+				ActivityId = data.ActivityId,
+				Timeslot = data.Timeslot,
+				BookedDate = data.BookedDate
 			};
 
 			context.Carts.Add(cart);

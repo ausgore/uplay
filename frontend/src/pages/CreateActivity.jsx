@@ -15,6 +15,14 @@ const CreateActivity = () => {
 	const [childPrice, setChildPrice] = useState("");
 	const [childPriceError, setChildPriceError] = useState("");
 	const [description, setDescription] = useState("");
+	
+	const [file, setFile] = useState();
+	const [url, setURL] = useState();
+	const [fileError, setFileError] = useState("");
+	const uploadFile = (e) => {
+		setURL(URL.createObjectURL(e.target.files[0]));
+		setFile(e.target.files[0]);
+	}
 
 	const [isDaily, setIsDaily] = useState(true);
 	const handleDaily = () => setIsDaily(!isDaily);
@@ -67,12 +75,20 @@ const CreateActivity = () => {
 			}
 		}
 
+		if (!url) {
+			hasError = true;
+			setFileError("An image must be uploaded");
+		}
+
 		if (hasError) return;
 
 		setAdultPriceError("");
 		setChildPriceError("");
 		setStartingDateError("");
+		setFileError("");
 
+		const formData = new FormData();
+		formData.append("file", file);
 		const separatedTags = tags.replace(/ /g, "").split(",");
 		const response = await axios.post("http://localhost:5021/activity/create", {
 			postalCode,
@@ -84,22 +100,31 @@ const CreateActivity = () => {
 			startingAt: startingDate.length ? startingDate : null,
 			endingAt: endingDate.length ? endingDate : null
 		}).catch(e => e.response);
-
 		if (response.status != 200) return alert("An error occurred when trying to create a new activity.");
-		
+
+		const fileResponse = await axios.post(`http://localhost:5021/activity/upload-file/${response.data.id}`, formData).catch(e => e.response);
+		if (fileResponse.status != 200) return alert("An error occured when trying to upload a file.");
+
 		for (const timeslot of timeslots) await axios.post(`http://localhost:5021/activity/add-timeslot/${response.data.id}`, { timeslot: `${timeslot}:00` });
 		if (separatedTags.length) await axios.post(`http://localhost:5021/activity/add-tag/${response.data.id}`, separatedTags.map(tag => ({ content: tag }))).then(console.log);
-		
+
 		alert("Activity successfully created. (DEBUG) Going to activity page.");
 		return navigate(`/activities/${response.data.id}`);
 	}
 
 
 	return <>
-		<Nav />
+		<Nav staff={true} />
 		<div className="max-w-[1300px] mx-auto px-4 pt-28">
 			<h1 className="font-bold text-2xl md:text-4xl">New Activity</h1>
 			<form className="mt-6 flex flex-col" onSubmit={onSubmit}>
+				{/* IMAGE */}
+				<input type="file" id="image" onChange={uploadFile} accept=".png, .jpg, .jpeg" required />
+				{file && <div className="aspect-[16/9] max-w-[600px] my-2">
+					<img alt="activity_image" className="object-cover w-full h-full rounded-lg border" src={url} />
+				</div>}
+				{fileError && <span className="text-sm text-red-500">{fileError}</span>}
+				{/* NAME */}
 				<label htmlFor="name" className="items-center font-semibold text-xl mt-3">Name <span className="text-red-500 text-sm">*</span></label>
 				<input id="name" placeholder="Activity Name" className="p-2 outline-none max-w-[414px] rounded-lg my-2" style={{ boxShadow: "0px 1px 4px 2px rgba(0, 0, 0, 0.40)" }} required value={name} onChange={e => setName(e.target.value)} />
 

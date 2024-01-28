@@ -26,6 +26,7 @@ var app = builder.Build();
 
 app.UseRouting();
 app.MapControllers();
+app.UseStaticFiles();
 
 if (app.Environment.IsDevelopment())
 {

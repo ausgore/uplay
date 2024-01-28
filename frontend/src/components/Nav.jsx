@@ -1,30 +1,48 @@
 import Logo from "../assets/images/logo.png";
 import { Link, useNavigate } from "react-router-dom"
-import { useUser } from "../contexts/UserContext";
-import Profile from "../assets/images/profile.png";
-import { useState } from "react";
+import { useUser, useUserUpdate } from "../contexts/UserContext";
+import { useEffect, useState } from "react";
+import NavItem from "./NavItem";
+import axios from "axios";
 
-const Nav = () => {
+const Nav = ({ staff, disableSearch, transparent }) => {
 	const user = useUser();
 	const navigate = useNavigate();
 	const [search, setSearch] = useState("");
+
+	const [cart, setCart] = useState([]);
+	useEffect(() => {
+		(async () => {
+			const response = await axios.get(`http://localhost:5021/user/cart/${user?.id}`).catch(e => e.response);
+			setCart(response.data);
+		})();
+	}, [user]);
+
 	const handleSearch = (e) => {
 		if (e.key == "Enter") {
 			navigate(`/activities?search=${search}`);
 		}
 	}
-	
-	return <nav className="bg-white fixed w-full top-0 z-10">
+
+	const [hovering, setHovering] = useState(false);
+
+	const updateUser = useUserUpdate();
+	const logout = () => {
+		updateUser(null);
+		if (staff) navigate("/login");
+	}
+
+	return <nav className={`${transparent ? "" : "bg-white"} fixed w-full top-0 z-10`}>
 		<div className="max-w-[1600px] mx-auto px-4 py-6 flex items-center justify-between">
 			{/* Search */}
-			<div className="lg:block hidden">
+			{!disableSearch && <div className="lg:block hidden">
 				<input type="text" placeholder="Search activities" className="py-2 px-4 border outline-none rounded-lg border-gray-500 w-[300px]" onKeyDown={handleSearch} value={search} onChange={e => setSearch(e.target.value)} />
-			</div>
+			</div>}
 			{/* Logo */}
-			<div className="w-20 md:w-24 lg:w-28">
+			<div className={`w-20 md:w-24 lg:w-28 ${disableSearch ? "mx-0 lg:mx-auto" : ""} cursor-pointer`} onClick={() => navigate("/activities")}>
 				<img src={Logo} className="w-full" />
 			</div>
-			{/* Navigators for PC */}	
+			{/* Navigators for PC */}
 			<div className="flex-row items-center hidden lg:flex gap-4">
 				{/* For if they haven't signed in */}
 				{!user && <>
@@ -40,18 +58,29 @@ const Nav = () => {
 						Sign Up
 					</Link>
 				</>}
-				{/* For if they ahve signed in */}
+				{/* For if they have signed in */}
 				{user && <>
-					<div className="flex items-center relative">
-						<div className="bg-[#D9D9D9] absolute right-[40px] z-[-2] h-[54px] w-[250px] rounded-l-full" style={{ filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.10))" }}>
-							<div className="px-8 pt-2 text-sm">
-								<p className="font-bold">FirstName LastName</p>
-								<p>{user?.email}</p>
-							</div>
-						</div>
-						<div className="w-[67px] relative">
-							<img src={Profile} />
-							<div className="bg-white rounded-full w-[50px] h-[50px] absolute bottom-2 right-2 z-[-1]"></div>
+					<div className="mr-8 cursor-pointer" onClick={() => navigate("/cart")}>
+						<p className="font-bold">CART ( {cart.length} )</p>
+					</div>
+					<div className="flex items-center relative" onMouseEnter={() => setHovering(true)} onMouseLeave={() => setHovering(false)} style={{ filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.10))"}}>
+						<div className={`${staff ? "bg-[#BA93FF]" : "bg-[#D9D9D9]"} rounded-t-lg w-[225px] px-4 py-1 relative`} onMouseEnter={() => setHovering(true)} onMouseLeave={() => setHovering(false)}>
+							<p className="font-bold text-sm">{user?.name}</p>
+							<p className="text-sm">{user?.email}</p>
+							{hovering && <div className={`w-full absolute ${staff ? "bg-[#BA93FF]" : "bg-[#E7E7E7]"} right-0 top-12 px-2 py-2 rounded-b-lg`} style={{ filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.10))"}}>
+								<ul className="text-sm font-medium">
+									<NavItem staff={staff} to="/edit-profile">Edit Profile</NavItem>
+									{!staff && <NavItem staff={staff} to="/bookings">Booking History</NavItem>}
+									{staff && <NavItem staff={staff} to="/manage-activities">Manage Activities</NavItem>}
+									{staff && <NavItem staff={staff} to="/manage-users">Manage Users</NavItem>}
+								</ul>
+								<hr className="border-black my-2" />
+								<ul className="text-sm font-medium">
+									{!user?.staff && !staff && <NavItem staff={staff} to="/manage-activities">Switch to Staff</NavItem>}
+									{staff && <NavItem staff={staff} to="/activities">Back to Customer</NavItem>}
+									<NavItem staff={staff} onClick={() => logout()}>Log Out</NavItem>
+								</ul>
+							</div>}
 						</div>
 					</div>
 				</>}

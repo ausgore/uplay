@@ -5,6 +5,7 @@ import axios from "axios";
 import { useUser } from "../contexts/UserContext";
 import Star from "../assets/images/star.png";
 import BlankStar from "../assets/images/blankstar.png";
+import Review from "../components/Review";
 
 // TODO: Export max-w-[1300px] mx-auto px-4 to its own "container" class
 // Create separate button component
@@ -15,9 +16,12 @@ const Activity = () => {
 	const { id } = useParams();
 	const [activity, setActivity] = useState();
 
-	const [review, setReview] = useState("");
-	const [rating, setRating] = useState(1);
-
+	const [url, setURL] = useState("");
+	const [date, setDate] = useState("");
+	const [dateError, setDateError] = useState("");
+	const [timeslot, setTimeslot] = useState("");
+	const [timeslotError, setTimeslotError] = useState("");
+	const handleTimeslot = (ts) => setTimeslot(ts);
 	useEffect(() => {
 		(async () => {
 			const response = await axios.get(`http://localhost:5021/activity?id=${id}`).catch(e => e.response);
@@ -26,6 +30,11 @@ const Activity = () => {
 				navigate("/");
 			}
 			setActivity(response.data[0]);
+
+			const fileRes = await axios.get(`http://localhost:5021/activity/file/${response.data[0].id}`, { responseType: "arraybuffer" });
+			const blob = new Blob([fileRes.data], { type: "image/png" });
+			const objectURL = URL.createObjectURL(blob);
+			setURL(objectURL);
 		})();
 	}, [id]);
 
@@ -33,6 +42,21 @@ const Activity = () => {
 	const [adultQuantity, setAdultQuantity] = useState(0);
 
 	const addToCart = async () => {
+		let hasError = false;
+		if (!date) {
+			hasError = true;
+			setDateError("You must select a date to book.");
+		}
+		if (activity.timeslots.length > 0 && !timeslot) {
+			hasError = true;
+			setTimeslotError("You must choose a timeslot to book.");
+		}
+
+		if (hasError) return;
+
+		setDateError("");
+		setTimeslotError("");
+
 		if (childQuantity + adultQuantity == 0) return alert("You cannot add nothing to your cart.");
 		if (!user) return alert("You must be logged in to be able to add to cart.");
 
@@ -40,31 +64,15 @@ const Activity = () => {
 			userId: user.id,
 			childQuantity,
 			adultQuantity,
-			activityId: activity.id
+			activityId: activity.id,
+			timeslot,
+			bookedDate: date
 		}).catch(e => e.response);
 
 		if (response.status != 200) return alert("An error occurred trying to add this to cart");
 
 		alert(`You have ${activity.name} to cart with Child: ${childQuantity}, Adult: ${adultQuantity}`);
 		navigate("/cart");
-	}
-
-	const submitReview = async () => {
-		if (!user) return alert("You cannot submit a review while logged out.");
-		if (!review?.trim().length) return alert("You cannot leave an empty review.");
-
-		const response = await axios.post(`http://localhost:5021/activity/submit-review/${activity.id}`, {
-			userId: user.id,
-			rating,
-			content: review
-		}).catch(e => e.response);
-		if (response.status != 200) return alert("An error occurred trying to submit this review");
-
-		alert("Review submitted!");
-		const { data: activities } = await axios.get(`http://localhost:5021/activity?id=${id}`).catch(e => e.response);
-		setActivity(activities[0]);
-		setReview("");
-		setRating(1);
 	}
 
 	return <>
@@ -86,7 +94,7 @@ const Activity = () => {
 				</div>
 			</div>
 			{/* Address */}
-			<p className="font-medium">PLACEHOLDER: 1 Kim Seng Promenade #02-102/103 Great World City, Singapore 237994 (REAL VALUE: {activity?.postalCode})</p>
+			<p className="font-medium">{activity?.postalCode}</p>
 			{/* Image, Description and Cart */}
 			<div className="flex flex-col xl:flex-row justify-between mt-6">
 				{/* LEFT */}
@@ -94,12 +102,29 @@ const Activity = () => {
 				<div>
 					{/* Image */}
 					<div className="aspect-[16/9] max-w-[719px]">
-						<img src="/yoga.png" alt="activity_image" className="object-cover w-full h-full rounded-lg" style={{ boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.60)" }} />
+						<img src={url} alt="activity_image" className="object-cover w-full h-full rounded-lg" style={{ boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.60)" }} />
 					</div>
 				</div>
 				{/* RIGHT */}
 				{/* Cart */}
 				<div className="mt-8 xl:mt-0 p-7 rounded-lg h-fit w-fit" style={{ boxShadow: "0px 1px 4px 2px rgba(0, 0, 0, 0.40)" }}>
+					{/* Date */}
+					<div className="mb-4">
+						<h2 className="font-semibold text-lg mb-1">Select Date</h2>
+						<input type="date" value={date} onChange={e => setDate(e.target.value)} className="outline-none cursor-pointer required" min={(new Date(activity?.startingAt) >= new Date() ? activity?.startingAt : new Date(Date.now() + 86400000)).toISOString().split("T")[0]} max={activity?.endingAt?.split("T")} />
+						{dateError.length != 0 && <p className="text-red-500 text-sm italic">{dateError}</p>}
+					</div>
+					{/* Timeslots */}
+					{activity?.timeslots.length != 0 && <div className="mb-4">
+						<h2 className="font-semibold text-lg mb-1">Select Timeslots</h2>
+						<div className="grid grid-cols-3 gap-2">
+							{activity?.timeslots.map(ts => {
+								const value = ts.timeslot.split(":").slice(0, 2).join(":")
+								return <div key={ts.id} className={`py-1 text-center rounded-lg border-2 font-medium ${timeslot == value ? "border-[#EB4710] text-[#EB4710]" : "border-black"} cursor-pointer`} onClick={() => handleTimeslot(value)}> {value} </div>
+							})}
+						</div>
+						{timeslotError.length != 0 && <p className="text-red-500 text-sm italic mt-1">{timeslotError}</p>}
+					</div>}
 					<h2 className="font-semibold text-lg mb-4">Select Option</h2>
 					{/* Options */}
 					<div className="flex flex-col gap-6">
@@ -130,7 +155,7 @@ const Activity = () => {
 					<p className="text-sm mt-6">Total</p>
 					<div className="flex flex-row justify-between">
 						<p className="text-3xl font-semibold">S$ {(((childQuantity ?? 0) * activity?.childPrice) + ((adultQuantity ?? 0) * activity?.adultPrice)).toFixed(2)}</p>
-						<button onClick={addToCart} className="py-2 px-4 text-white font-bold text-lg" style={{
+						<button type="submit" onClick={addToCart} className="py-2 px-4 text-white font-bold text-lg ml-6" style={{
 							borderRadius: "10px",
 							background: "linear-gradient(109deg, #EB4710 20.67%, #FBDA01 144.1%)",
 							boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)"
@@ -153,54 +178,21 @@ const Activity = () => {
 				<h1 className="md:text-2xl font-bold text-xl mb-4">Let's see what others thought about it...</h1>
 				<div className="flex flex-row lg:text-center justify-center items-center w-full">
 					{/* Average rating */}
-					{activity?.reviews.length > 0 && <h1 className="font-bold text-3xl">{(activity?.reviews.reduce((a, b) => a + b.rating, 0)/activity?.reviews.length).toFixed(1)}</h1>}
+					{activity?.reviews.length > 0 && <h1 className="font-bold text-3xl">{(activity?.reviews.reduce((a, b) => a + b.rating, 0) / activity?.reviews.length).toFixed(1)}</h1>}
 					{activity?.reviews.length == 0 && <h1 className="font-bold text-3xl">0.0</h1>}
-					<img src={(activity?.reviews.reduce((a, b) => a + b.rating, 0)/activity?.reviews.length) >= 1 ? Star : BlankStar} className="w-[30px] h-[30px] ml-4" />
-					<img src={(activity?.reviews.reduce((a, b) => a + b.rating, 0)/activity?.reviews.length) >= 2 ? Star : BlankStar} className="w-[30px] h-[30px] ml-1" />
-					<img src={(activity?.reviews.reduce((a, b) => a + b.rating, 0)/activity?.reviews.length) >= 3 ? Star : BlankStar} className="w-[30px] h-[30px] ml-1" />
-					<img src={(activity?.reviews.reduce((a, b) => a + b.rating, 0)/activity?.reviews.length) >= 4 ? Star : BlankStar} className="w-[30px] h-[30px] ml-1" />
-					<img src={(activity?.reviews.reduce((a, b) => a + b.rating, 0)/activity?.reviews.length) >= 5 ? Star : BlankStar} className="w-[30px] h-[30px] ml-1" />
+					<img src={(activity?.reviews.reduce((a, b) => a + b.rating, 0) / activity?.reviews.length) >= 1 ? Star : BlankStar} className="w-[30px] h-[30px] ml-4" />
+					<img src={(activity?.reviews.reduce((a, b) => a + b.rating, 0) / activity?.reviews.length) >= 2 ? Star : BlankStar} className="w-[30px] h-[30px] ml-1" />
+					<img src={(activity?.reviews.reduce((a, b) => a + b.rating, 0) / activity?.reviews.length) >= 3 ? Star : BlankStar} className="w-[30px] h-[30px] ml-1" />
+					<img src={(activity?.reviews.reduce((a, b) => a + b.rating, 0) / activity?.reviews.length) >= 4 ? Star : BlankStar} className="w-[30px] h-[30px] ml-1" />
+					<img src={(activity?.reviews.reduce((a, b) => a + b.rating, 0) / activity?.reviews.length) >= 5 ? Star : BlankStar} className="w-[30px] h-[30px] ml-1" />
 				</div>
 				{/* Number of reviews */}
 				<p className="font-semibold mt-1">Based on {activity?.reviews.length} reviews</p>
-				<div className="max-w-[800px] mx-auto mt-4">
-					<h1 className="md:text-2xl font-bold text-xl text-left">Write your review</h1>
-					<div className="flex flex-row mb-4 mt-2">
-						<img src={Star} className="w-[25px] h-[25px] mr-1" onClick={e => setRating(1)} />
-						<img src={rating >= 2 ? Star : BlankStar} className="w-[25px] h-[25px] mr-1 cursor-pointer" onClick={e => setRating(2)} />
-						<img src={rating >= 3 ? Star : BlankStar} className="w-[25px] h-[25px] mr-1 cursor-pointer" onClick={e => setRating(3)} />
-						<img src={rating >= 4 ? Star : BlankStar} className="w-[25px] h-[25px] mr-1 cursor-pointer" onClick={e => setRating(4)} />
-						<img src={rating >= 5 ? Star : BlankStar} className="w-[25px] h-[25px] mr-1 cursor-pointer" onClick={e => setRating(5)} />
-					</div>
-					{/* Writing a review */}
-					<textarea className="outline-none border w-full h-[166px] rounded-lg px-4 py-2 resize-none" placeholder="Write a review..." value={review} onChange={e => setReview(e.target.value)} />
-					{/* Submit review */}
-					<button className="rounded-lg max-w-[200px] text-white font-semibold text-sm px-4 py-2 mt-4" style={{ background: "linear-gradient(102deg, #EB4710 25.27%, #F8BA05 93.93%)", boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)" }} onClick={submitReview}>Submit Review</button>
-				</div>
 			</div>
-
 			<hr className="my-12 border-[#EB4710] border-[1px] mx-auto max-w-[800px]" />
 			{/* Reviews */}
 			<div className="max-w-[800px] mx-auto mb-20">
-				{activity?.reviews.map(review => {
-					// const response = await axios.get(`http://localhost:5021/user`);
-					// const reviewer = response.data.filter(u => u.id == review.userId)[0];
-
-					return <div className="max-w-[800px] mb-10">
-						<div className="flex">
-							{/* Stars */}
-							<img src={review.rating >= 1 ? Star : BlankStar} className="w-[20px] h-[20px] mr-1" />
-							<img src={review.rating >= 2 ? Star : BlankStar} className="w-[20px] h-[20px] mr-1" />
-							<img src={review.rating >= 3 ? Star : BlankStar} className="w-[20px] h-[20px] mr-1" />
-							<img src={review.rating >= 4 ? Star : BlankStar} className="w-[20px] h-[20px] mr-1" />
-							<img src={review.rating >= 5 ? Star : BlankStar} className="w-[20px] h-[20px] mr-1" />
-						</div>
-						{/* Text */}
-						<p className="font-bold mt-2">{review.content}</p>
-						{/* Name */}
-						<p className="font-medium">Firstname Lastname</p>
-					</div>
-				})}
+				{activity?.reviews.map(review => <Review review={review} key={review.id} />)}
 			</div>
 		</div>
 	</>;

@@ -30,12 +30,36 @@ namespace Uplay.Controllers
 			return Ok(result.ToList());
 		}
 
+		[HttpGet("file/{activityId}")]
+		public IActionResult GetFile(int activityId)
+		{
+			var filePath = Path.Combine("Images/Activities", $"{activityId}.png");
+			if (System.IO.File.Exists(filePath)) {
+				var fileStream= new FileStream(filePath, FileMode.Open);
+				return new FileStreamResult(fileStream, "image/png");
+			}
+			else return NotFound();
+		}
+
+		[HttpPost("upload-file/{activityId}")]
+		public IActionResult UploadFile(int activityId, IFormFile file)
+		{
+			string filePath = Path.Combine("Images/Activities", $"{activityId}.png");
+			using (var fileStream = new FileStream(filePath, FileMode.Create))
+			{
+				file.CopyTo(fileStream);
+			}
+			return Ok(new { message = "Successfully uploaded" });
+		}
+
 		[HttpPost("create")]
 		public IActionResult CreateActivity(Activity data)
 		{
 			var activity = new Activity()
 			{
 				Name = data.Name,
+				Category = data.Category,
+				Subcategory = data.Subcategory,
 				PostalCode = data.PostalCode,
 				ChildPrice = data.ChildPrice ?? null,
 				AdultPrice = data.AdultPrice ?? null,
@@ -56,6 +80,9 @@ namespace Uplay.Controllers
 		{
 			var activity = context.Activities.Where(a => a.Id == activityId).FirstOrDefault();
 			if (activity == null) return NotFound();
+
+			var path = Path.Combine("Images/Activities", $"{activityId}.png");
+			if (System.IO.File.Exists(path)) System.IO.File.Delete(path);
 
 			context.Activities.Remove(activity);
 			context.SaveChanges();
@@ -184,7 +211,7 @@ namespace Uplay.Controllers
 			context.Reviews.Add(review);
 			context.SaveChanges();
 
-			return Ok(activity);
+			return Ok(review);
 		}
 	}
 }

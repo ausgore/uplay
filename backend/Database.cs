@@ -25,5 +25,6 @@ namespace Uplay
 		public required DbSet<ActivityTimeslot> ActivityTimeslots { get; set; }
 		public required DbSet<ActivityTag> ActivityTags { get; set; }
 		public required DbSet<Cart> Carts { get; set; }
+		public required DbSet<Booking> Bookings { get; set; }
 	}
 }

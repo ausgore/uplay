@@ -27,6 +27,13 @@ const UpdateActivity = () => {
 	const [minute, setMinute] = useState();
 	const [timeslots, setTimeslots] = useState([]);
 
+	const [file, setFile] = useState();
+	const [url, setURL] = useState();
+	const uploadFile = (e) => {
+		setURL(URL.createObjectURL(e.target.files[0]));
+		setFile(e.target.files[0]);
+	}
+
 	const addTimeslot = async () => {
 		if (!hour || hour.length > 2 || !minute || minute.length > 2) return alert("You must provide a valid time to add.");
 		const timeslot = `${hour.length == 1 ? "0" : ""}${hour}:${minute.length == 1 ? "0" : ""}${minute}`;
@@ -51,6 +58,17 @@ const UpdateActivity = () => {
 				alert(`(DEBUG) No activity with ID ${id}. Returning to sign in page.`);
 				navigate("/");
 			}
+
+			const fileResponse = await axios.get(`http://localhost:5021/activity/file/${id}`, { responseType: "arraybuffer" });
+			const buffer = new Uint8Array(fileResponse.data);
+			let binary = "";
+			const bytes = new Uint8Array(buffer);
+			for (const byte of bytes) binary += String.fromCharCode(byte);
+			const blob = new Blob([fileResponse.data], { type: "image/png" });
+			const objectURL = URL.createObjectURL(blob);
+			setFile(`data:image/png;base64,${btoa(binary)}`);
+			setURL(objectURL);
+			
 			setName(response.data[0].name);
 			setPostalCode(response.data[0].postalCode);
 			setTags(response.data[0].tags.map(t => t.content).join(", "));
@@ -108,7 +126,12 @@ const UpdateActivity = () => {
 			endingAt: endingDate.length ? endingDate : null
 		}).catch(e => e.response);
 
-		if (response.status != 200) return alert("An error occurred when trying to create a new activity.");
+		const formData = new FormData();
+		formData.append("file", file);
+		const fileResponse = await axios.post(`http://localhost:5021/activity/upload-file/${id}`, formData).catch(e => e.repsonse);
+		if (fileResponse.status != 200) return alert("An error occured when trying to edit a file");
+
+		if (response.status != 200) return alert("An error occurred when trying to update the activity.");
 
 		// Setting tags
 		const separatedTags = tags.replace(/ /g, "").split(",");
@@ -121,10 +144,18 @@ const UpdateActivity = () => {
 
 
 	return <>
-		<Nav />
+		<Nav staff={true} />
 		<div className="max-w-[1300px] mx-auto px-4 pt-28">
-			<h1 className="font-bold text-2xl md:text-4xl">New Activity</h1>
+			<h1 className="font-bold text-2xl md:text-4xl">Update Activity</h1>
 			<form className="mt-6 flex flex-col" onSubmit={onSubmit}>
+				{/* IMAGE */}
+				<input type="file" id="image" onChange={uploadFile} accept=".png, .jpg, .jpeg" required />
+				{file && <div className="aspect-[16/9] max-w-[600px] my-2">
+					<img alt="activity_image" className="object-cover w-full h-full rounded-lg border" src={url} />
+				</div>}
+				{/* NAME */}
+				<label htmlFor="name" className="items-center font-semibold text-xl mt-3">Name <span className="text-red-500 text-sm">*</span></label>
+				<input id="name" placeholder="Activity Name" className="p-2 outline-none max-w-[414px] rounded-lg my-2" style={{ boxShadow: "0px 1px 4px 2px rgba(0, 0, 0, 0.40)" }} required value={name} onChange={e => setName(e.target.value)} />
 				<label htmlFor="name" className="items-center font-semibold text-xl mt-3">Name <span className="text-red-500 text-sm">*</span></label>
 				<input id="name" placeholder="Activity Name" className="p-2 outline-none max-w-[414px] rounded-lg my-2" style={{ boxShadow: "0px 1px 4px 2px rgba(0, 0, 0, 0.40)" }} required value={name} onChange={e => setName(e.target.value)} />
 

@@ -16,13 +16,14 @@ const ManageActivities = () => {
 	const deleteActivity = async (id) => {
 		const response = await axios.delete(`http://localhost:5021/activity/delete/${id}`).catch(e => e.response);
 		if (response.status != 200) return alert("There was an error trying to delete this activity.");
+		console.log(response.data);
 		const { data } = await axios.get("http://localhost:5021/activity");
 		setActivities(data);
 	}
 	
 
 	return <div>
-		<Nav />
+		<Nav staff={true} />
 		<div className="max-w-[1300px] mx-auto px-4 pt-28">
 			<div className="flex justify-between">
 				<h1 className="font-bold text-3xl">Manage Activities</h1>
@@ -41,7 +42,7 @@ const ManageActivities = () => {
 				</thead>
 				<tbody>
 					{activities?.map((activity, index) => {
-						return <tr className={`${index % 2 == 0 ? "bg-gray-50" : ""}`} id={activity.id}>
+						return <tr className={`${index % 2 == 0 ? "bg-gray-50" : ""}`} key={activity.id}>
 							<td className="pl-6 py-4 font-bold">{activity.id}</td>
 							<td>{activity.name}</td>
 							<td className="pr-6 py-4 flex justify-end items-center gap-2">

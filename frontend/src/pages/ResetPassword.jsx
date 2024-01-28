@@ -1,7 +1,6 @@
 import Logo from "../assets/images/logo.png";
 import { useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import FormError from "../components/FormError";
 import axios from "axios";
 import { useUserUpdate } from "../contexts/UserContext";
 
@@ -37,7 +36,6 @@ const ResetPassword = () => {
 			// Remove user from contexdt so they will have to log in again
 			updateUser(null);
 		}
-
 		return navigate("/login");
 	};
 
@@ -50,14 +48,14 @@ const ResetPassword = () => {
 				<label htmlFor="password" className="font-medium mb-1">New Password</label>
 				<div className="flex flex-row items-center">
 					<input type="password" id="password" className="border-b-[#E6533F] border-b-[3px] outline-none p-1 w-full" value={passwordValue} onChange={e => setPasswordValue(e.target.value)} required />
-					<FormError errorMessage={passwordError} />
+					<span className="text-sm italic text-red-500">{passwordError}</span>
 				</div>
 			</div>
 			<div className="flex flex-col pb-8">
 				<label htmlFor="password" className="font-medium mb-1">Confirm New Password</label>
 				<div className="flex flex-row items-center">
 					<input type="password" id="password" className="border-b-[#E6533F] border-b-[3px] outline-none p-1 w-full" value={confirmPasswordValue} onChange={e => setConfirmPasswordValue(e.target.value)} required />
-					<FormError errorMessage={confirmPasswordError} />
+					<span className="text-sm italic text-red-500">{confirmPasswordError}</span>
 				</div>
 			</div>
 			<div className="flex justify-center mt-12">
