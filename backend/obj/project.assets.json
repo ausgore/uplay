@@ -843,7 +843,7 @@
           "lib/net6.0/SQLitePCLRaw.provider.e_sqlite3.dll": {}
         }
       },
-      "Stripe.net/43.9.0": {
+      "Stripe.net/43.12.0": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.3",
@@ -2768,10 +2768,10 @@
         "sqlitepclraw.provider.e_sqlite3.nuspec"
       ]
     },
-    "Stripe.net/43.9.0": {
-      "sha512": "kx6G3vwCkYd3N+BR3DgisCjHZw3aNwfrLXDlqgC4RrL+CBvZuIxu+2vQ+xenCEJA4/LqJr+Ml9hOx8j7Sl8z4g==",
+    "Stripe.net/43.12.0": {
+      "sha512": "0cDEW1/wRJqXpBRcsZcDhQDHK1cEtdtYsh3bfW0hP/2TQQRvuXNzsV3N90coEO3/ziEhcx1FEZW3anwFdFFo/g==",
       "type": "package",
-      "path": "stripe.net/43.9.0",
+      "path": "stripe.net/43.12.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2787,7 +2787,7 @@
         "lib/netcoreapp3.1/Stripe.net.xml",
         "lib/netstandard2.0/Stripe.net.dll",
         "lib/netstandard2.0/Stripe.net.xml",
-        "stripe.net.43.9.0.nupkg.sha512",
+        "stripe.net.43.12.0.nupkg.sha512",
         "stripe.net.nuspec"
       ]
     },
@@ -3504,7 +3504,7 @@
       "Microsoft.EntityFrameworkCore >= 8.0.0",
       "Microsoft.EntityFrameworkCore.Sqlite >= 8.0.0",
       "Microsoft.EntityFrameworkCore.Tools >= 8.0.0",
-      "Stripe.net >= 43.9.0",
+      "Stripe.net >= 43.12.0",
       "Swashbuckle.AspNetCore >= 6.4.0"
     ]
   },
@@ -3577,7 +3577,7 @@
           },
           "Stripe.net": {
             "target": "Package",
-            "version": "[43.9.0, )"
+            "version": "[43.12.0, )"
           },
           "Swashbuckle.AspNetCore": {
             "target": "Package",

@@ -38,7 +38,7 @@ const SignUp = () => {
 			mobileNumber: mobileValue,
 			name: nameValue,
 			birthDate: birthDateValue
-		}).catch(e => e.response);
+		});
 		if (response.data.email?.includes("already registered") || response.data.mobile) {
 			if (response.data.email?.includes("already registered")) setEmailError(response.data.email);
 			if (response.data.mobile) setMobileError(response.data.mobile);

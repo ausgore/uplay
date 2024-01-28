@@ -13,7 +13,6 @@ const Bookings = () => {
 		(async () => {
 			const response = await axios.get(`http://localhost:5021/booking/get-bookings/${user?.id}`)
 			setBookings(response.data);
-			console.log(response.data);
 		})();
 	}, [user]);
 

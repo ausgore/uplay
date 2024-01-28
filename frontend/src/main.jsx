@@ -19,6 +19,7 @@ import Booking from "./pages/Booking";
 import CreateChatbotPrompt from "./pages/Chatbot/CreateChatbotPrompt";
 import ManageChatbotPrompts from "./pages/Chatbot/ManageChatbotPrompts";
 import UpdateChatbotPrompt from "./pages/Chatbot/UpdatePrompt";
+import Checkout from "./pages/Checkout";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
@@ -32,6 +33,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
 					<Route path="/bookings" element={<Bookings />} />
 					<Route path="/bookings/:id" element={<Booking />} />
+					<Route path="/checkout" element={<Checkout />} />
 
 					<Route path="/activities" element={<Activities />} />
 					<Route path="/activities/:id" element={<Activity />} />

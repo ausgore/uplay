@@ -35,21 +35,7 @@ const Cart = () => {
 
 	const checkout = async () => {
 		if (!cart.length) return alert("You can't checkout with nothing.");
-		for (const product of cart) {
-			console.log(product);
-			await axios.post(`http://localhost:5021/booking/create/${product.id}`, {
-				activityId: product.activity.id,	
-				activityName: product.activity.name,
-				bookedDate: product.bookedDate,
-				timeslot: product.timeslot,
-				activityPostalCode: product.activity.postalCode,
-				childQuantity: product.childQuantity,
-				adultQuantity: product.adultQuantity,
-				initialAdultPrice: product.activity.adultPrice,
-				initialChildPrice: product.activity.childPrice
-			});
-		}
-		alert("Added to cart! (Should be going to Stripe. DEBUG: Going to Bookings)")
+		navigate("/checkout");
 	}
 
 	return <>
