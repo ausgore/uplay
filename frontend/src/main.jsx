@@ -16,6 +16,9 @@ import EditProfile from "./pages/EditProfile";
 import ManageUsers from "./pages/ManageUsers";
 import Bookings from "./pages/Bookings";
 import Booking from "./pages/Booking";
+import CreateChatbotPrompt from "./pages/Chatbot/CreateChatbotPrompt";
+import ManageChatbotPrompts from "./pages/Chatbot/ManageChatbotPrompts";
+import UpdateChatbotPrompt from "./pages/Chatbot/UpdatePrompt";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
@@ -38,6 +41,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 					<Route path="/manage-activities" element={<ManageActivities />} />
 					<Route path="/manage-users" element={<ManageUsers />} />
 					<Route path="/update-activity/:id" element={<UpdateActivity />} />
+
+					<Route path="/create-chatbot-prompt" element={<CreateChatbotPrompt />} />
+					<Route path="/manage-chatbot-prompts" element={<ManageChatbotPrompts />} />
+					<Route path="/update-chatbot-prompt/:id" element={<UpdateChatbotPrompt />} />
 				</Routes>
 			</BrowserRouter>
 		</UserProvider>

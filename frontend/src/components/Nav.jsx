@@ -73,6 +73,7 @@ const Nav = ({ staff, disableSearch, transparent }) => {
 									{!staff && <NavItem staff={staff} to="/bookings">Booking History</NavItem>}
 									{staff && <NavItem staff={staff} to="/manage-activities">Manage Activities</NavItem>}
 									{staff && <NavItem staff={staff} to="/manage-users">Manage Users</NavItem>}
+									{staff && <NavItem staff={staff} to="/manage-chatbot-prompts">Manage Chatbot Prompts</NavItem>}
 								</ul>
 								<hr className="border-black my-2" />
 								<ul className="text-sm font-medium">

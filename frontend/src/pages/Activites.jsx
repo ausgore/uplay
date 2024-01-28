@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useUser } from "../contexts/UserContext";
 import ActivityCard from "../components/ActivityCard";
+import Chatbot from "./Chatbot/Chatbot";
 
 const Activities = () => {
 	const user = useUser();
@@ -27,6 +28,7 @@ const Activities = () => {
 				{activities.filter(a => search ? a.name.includes(search) : true).map(activity => <ActivityCard key={activity.id} activity={activity} />)}
 			</div>
 		</div>
+		<Chatbot/>
 	</>
 }
 
