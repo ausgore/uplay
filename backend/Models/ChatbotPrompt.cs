@@ -17,7 +17,7 @@ namespace Uplay.Models
         public string Answer {  get; set; } = string.Empty;
       
         [Column(TypeName = "datetime")]
-        public DateTime CreatdedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         [Column(TypeName = "datetime")]
         public DateTime UpdatedAt {  get; set; }
