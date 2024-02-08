@@ -17,7 +17,7 @@ namespace Uplay.Controllers
         }
 
         [HttpGet()]
-        public IActionResult GetPrompts(int? id, string sortBy = "date")
+        public IActionResult GetPrompts(int? id, string sortBy = "dateDesc", string search= "")
         {
             IQueryable<ChatbotPrompt> result = context.Prompts;
             if (id != null)
@@ -26,13 +26,26 @@ namespace Uplay.Controllers
             }
             else
             {
-                if (sortBy == "date")
+                if (!string.IsNullOrEmpty(search))
                 {
-                    result = result.OrderBy(p => p.CreatdedAt);
+                    result = result.Where(p => p.Question.ToLower().Contains(search) || p.Category.ToLower().Contains(search) || p.Answer.ToLower().Contains(search));
                 }
-                else if (sortBy == "category")
+
+                if (sortBy == "dateDesc")
                 {
-                    result = result.OrderBy(p => p.Category);
+                    result = result.OrderByDescending(p => p.UpdatedAt);
+                }
+                else if (sortBy == "dateAsc")
+                {
+                    result = result.OrderBy(p => p.UpdatedAt);
+                }
+                else if (sortBy == "categoryDesc")
+                {
+                    result = result.OrderByDescending(p => p.Category).ThenByDescending(p => p.UpdatedAt);
+                }
+                else if (sortBy == "categoryAsc")
+                {
+                    result = result.OrderBy(p => p.Category).ThenByDescending(p => p.UpdatedAt);
                 }
                 else
                 {
@@ -52,7 +65,7 @@ namespace Uplay.Controllers
                 Category = data.Category,
                 Question = data.Question,
                 Answer = data.Answer,
-                CreatdedAt = now,
+                CreatedAt = now,
                 UpdatedAt = now
 
             };
