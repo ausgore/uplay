@@ -4,19 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import ChatbotConversation from "./ChatbotConversation";
 
 const Chatbot = () => {
-  const [isVisible, setIsVisible] = useState(true);
-  //   const timerRef = useRef(null);
   const [isChatbotVisible, setIsChatbotVisible] = useState(false);
 
   const toggleChatbotVisibility = () => {
     setIsChatbotVisible((prev) => !prev);
   };
 
-  
-
   return (
     <div>
-      {isChatbotVisible && <ChatbotConversation/>}
+      {isChatbotVisible && (
+        <ChatbotConversation closeChatbot={toggleChatbotVisibility} />
+      )}
       <div
         className="chatbot-fab-container"
         style={{
@@ -37,7 +35,6 @@ const Chatbot = () => {
             marginRight: "-8px",
             color: "white",
             boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-            
           }}
         >
           Chat with PlayBot!
@@ -53,20 +50,17 @@ const Chatbot = () => {
             height: "65px",
             backgroundColor: "white",
             border: "5px solid #EB4710",
-            
           }}
         >
-          
-            <img
-              src={Logo}
-              alt="Chatbot"
-              style={{
-                width: "60%",
-                height: "60%",
-              }}
-              className="chatbot-fab-image"
-            />
-          
+          <img
+            src={Logo}
+            alt="Chatbot"
+            style={{
+              width: "60%",
+              height: "60%",
+            }}
+            className="chatbot-fab-image"
+          />
         </Fab>
       </div>
     </div>
