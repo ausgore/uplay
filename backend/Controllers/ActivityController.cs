@@ -75,6 +75,13 @@ namespace Uplay.Controllers
 			return Ok(activity);
 		}
 
+		[HttpGet("get-unique-tags")]
+		public async Task<List<string>> GetUniqueTags()
+		{
+			var tags = await context.ActivityTags.Select(tag => tag.Content).Distinct().ToListAsync();
+			return tags;
+		}
+
 		[HttpDelete("delete/{activityId}")]
 		public IActionResult DeleteActivity(int activityId)
 		{

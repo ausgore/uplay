@@ -9,6 +9,8 @@ const CreateActivity = () => {
 	const [name, setName] = useState("");
 	const [postalCode, setPostalCode] = useState("");
 	const [postalCodeError, setPostalCodeError] = useState("");
+	const [category, setCategory] = useState("");
+
 	const [tags, setTags] = useState("");
 	const [adultPrice, setAdultPrice] = useState("");
 	const [adultPriceError, setAdultPriceError] = useState("");
@@ -96,6 +98,7 @@ const CreateActivity = () => {
 			childPrice: childPrice ? parseInt(childPrice) : null,
 			adultPrice: adultPrice ? parseInt(adultPrice) : null,
 			description,
+			category,
 			isDaily,
 			startingAt: startingDate.length ? startingDate : null,
 			endingAt: endingDate.length ? endingDate : null
@@ -124,10 +127,23 @@ const CreateActivity = () => {
 					<img alt="activity_image" className="object-cover w-full h-full rounded-lg border" src={url} />
 				</div>}
 				{fileError && <span className="text-sm text-red-500">{fileError}</span>}
+				
 				{/* NAME */}
 				<label htmlFor="name" className="items-center font-semibold text-xl mt-3">Name <span className="text-red-500 text-sm">*</span></label>
 				<input id="name" placeholder="Activity Name" className="p-2 outline-none max-w-[414px] rounded-lg my-2" style={{ boxShadow: "0px 1px 4px 2px rgba(0, 0, 0, 0.40)" }} required value={name} onChange={e => setName(e.target.value)} />
 
+				{/* CATEGORY */}
+				<label htmlFor="category" className="items-center font-semibold text-xl mt-3">Category <span className="text-red-500 text-sm">*</span></label>
+				<select id="category" name="category" className="p-2 max-w-[414px] rounded-lg my-2 outline-none" style={{ boxShadow: "0px 1px 4px 2px rgba(0, 0, 0, 0.40)" }} value={category} onChange={e => setCategory(e.target.value)} required>
+					<option disabled>Please select a category</option>
+					<option value="Dine and Wine">Dine and Wine</option>
+					<option value="Family Bonding">Family Bonding</option>
+					<option value="Hobbies and Wellness">Hobbies and Wellness</option>
+					<option value="Sports and Adventure">Sports and Adventure</option>
+					<option value="Travel">Travel</option>
+				</select>
+
+				{/* LOCATION */}
 				<label htmlFor="location" className="items-center font-semibold text-xl mt-3">Location <span className="text-red-500 text-sm">*</span></label>
 				<input id="location" placeholder="Enter Postal Code" className="p-2 outline-none max-w-[414px] rounded-lg my-2" style={{ boxShadow: "0px 1px 4px 2px rgba(0, 0, 0, 0.40)" }} required value={postalCode} onChange={e => setPostalCode(e.target.value)} />
 				{postalCodeError && <span className="text-sm text-red-500">{postalCodeError}</span>}
@@ -192,7 +208,7 @@ const CreateActivity = () => {
 											<span className="text-[10px] font-bold text-white">x</span>
 										</button>
 										<span className="font-bold text-[#933EFF]">{timeslot}</span>
-									</div>;
+									</div>
 								})}
 							</div>
 							{/* Adding a new timeslot */}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Nav from "../components/Nav";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useUser } from "../contexts/UserContext";
 import Star from "../assets/images/star.png";
@@ -71,19 +71,24 @@ const Activity = () => {
 
 		if (response.status != 200) return alert("An error occurred trying to add this to cart");
 
-		alert(`You have ${activity.name} to cart with Child: ${childQuantity}, Adult: ${adultQuantity}`);
+		alert(`Successfully added to cart!`);
 		navigate("/cart");
 	}
 
 	return <>
 		<Nav />
 		<div className="max-w-[1300px] mx-auto px-4 pt-32">
+			<div className="flex mb-4">
+				<Link to="/activities" className="font-medium hover:text-red-600">Home</Link>
+				<p className="mx-3"> / </p>
+				<Link to={`/activities?category=${activity?.category}`} className="font-medium hover:text-red-600">{activity?.category}</Link>
+			</div>
 			{/* Header */}
 			<div className="mt-2 mb-3 flex flex-col lg:flex-row gap-2 lg:gap-12">
 				{/* Title */}
 				<h1 className="text-lg md:text-2xl font-bold">{activity?.name}</h1>
 				{/* Tags */}
-				<div className="flex flex-row max-w-full gap-3">
+				{/* <div className="flex flex-row max-w-full gap-3">
 					<div className="text-white font-bold items-center flex px-4 py-2 lg:py-1 text-xs lg:text-base" style={{
 						borderRadius: "10px",
 						background: "linear-gradient(293deg, #BA93FF -23.61%, #933EFF 80.31%)",
@@ -91,7 +96,7 @@ const Activity = () => {
 					}}>
 						BESTSELLER
 					</div>
-				</div>
+				</div> */}
 			</div>
 			{/* Address */}
 			<p className="font-medium">{activity?.postalCode}</p>
@@ -101,7 +106,7 @@ const Activity = () => {
 				{/* Image description */}
 				<div>
 					{/* Image */}
-					<div className="aspect-[16/9] max-w-[719px]">
+					<div className="aspect-[16/9] w-[719px]">
 						<img src={url} alt="activity_image" className="object-cover w-full h-full rounded-lg" style={{ boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.60)" }} />
 					</div>
 				</div>
@@ -111,7 +116,7 @@ const Activity = () => {
 					{/* Date */}
 					<div className="mb-4">
 						<h2 className="font-semibold text-lg mb-1">Select Date</h2>
-						<input type="date" value={date} onChange={e => setDate(e.target.value)} className="outline-none cursor-pointer required" min={(new Date(activity?.startingAt) >= new Date() ? activity?.startingAt : new Date(Date.now() + 86400000)).toISOString().split("T")[0]} max={activity?.endingAt?.split("T")} />
+						<input type="date" value={date} onChange={e => setDate(e.target.value)} className="outline-none cursor-pointer required" min={(new Date(activity?.startingAt) >= new Date() ? activity?.startingAt : new Date(Date.now() + 8.64e+7)).toISOString().split("T")[0]} max={activity?.endingAt?.split("T")} />
 						{dateError.length != 0 && <p className="text-red-500 text-sm italic">{dateError}</p>}
 					</div>
 					{/* Timeslots */}

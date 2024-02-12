@@ -18,7 +18,7 @@ namespace Uplay.Controllers
 		{
 			var options = new PaymentIntentCreateOptions
 			{
-				Amount = amount * 1000,
+				Amount = amount * 100,
 				Currency = "sgd",
 				AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
 				{

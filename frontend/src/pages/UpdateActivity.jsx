@@ -29,7 +29,9 @@ const UpdateActivity = () => {
 
 	const [file, setFile] = useState();
 	const [url, setURL] = useState();
+	const [fileUpdated, setFileUpdated] = useState(false);
 	const uploadFile = (e) => {
+		setFileUpdated(true);
 		setURL(URL.createObjectURL(e.target.files[0]));
 		setFile(e.target.files[0]);
 	}
@@ -126,10 +128,12 @@ const UpdateActivity = () => {
 			endingAt: endingDate.length ? endingDate : null
 		}).catch(e => e.response);
 
-		const formData = new FormData();
-		formData.append("file", file);
-		const fileResponse = await axios.post(`http://localhost:5021/activity/upload-file/${id}`, formData).catch(e => e.repsonse);
-		if (fileResponse.status != 200) return alert("An error occured when trying to edit a file");
+		if (file && fileUpdated) {
+			const formData = new FormData();
+			formData.append("file", file);
+			const fileResponse = await axios.post(`http://localhost:5021/activity/upload-file/${id}`, formData).catch(e => e.response);
+			if (fileResponse.status != 200) return alert("An error occured when trying to edit a file");	
+		}
 
 		if (response.status != 200) return alert("An error occurred when trying to update the activity.");
 
@@ -149,13 +153,11 @@ const UpdateActivity = () => {
 			<h1 className="font-bold text-2xl md:text-4xl">Update Activity</h1>
 			<form className="mt-6 flex flex-col" onSubmit={onSubmit}>
 				{/* IMAGE */}
-				<input type="file" id="image" onChange={uploadFile} accept=".png, .jpg, .jpeg" required />
+				<input type="file" id="image" onChange={uploadFile} accept=".png, .jpg, .jpeg" />
 				{file && <div className="aspect-[16/9] max-w-[600px] my-2">
 					<img alt="activity_image" className="object-cover w-full h-full rounded-lg border" src={url} />
 				</div>}
 				{/* NAME */}
-				<label htmlFor="name" className="items-center font-semibold text-xl mt-3">Name <span className="text-red-500 text-sm">*</span></label>
-				<input id="name" placeholder="Activity Name" className="p-2 outline-none max-w-[414px] rounded-lg my-2" style={{ boxShadow: "0px 1px 4px 2px rgba(0, 0, 0, 0.40)" }} required value={name} onChange={e => setName(e.target.value)} />
 				<label htmlFor="name" className="items-center font-semibold text-xl mt-3">Name <span className="text-red-500 text-sm">*</span></label>
 				<input id="name" placeholder="Activity Name" className="p-2 outline-none max-w-[414px] rounded-lg my-2" style={{ boxShadow: "0px 1px 4px 2px rgba(0, 0, 0, 0.40)" }} required value={name} onChange={e => setName(e.target.value)} />
 

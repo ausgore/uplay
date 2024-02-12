@@ -29,7 +29,6 @@ const Booking = () => {
 		const response = await axios.post(`http://localhost:5021/activity/submit-review/${booking.activityId}`, { userId: user.id, rating, content: review }).catch(e => e.response);
 		if (response.status != 200) return alert("An error occurred trying to submit this review");
 		const bookingResponse = await axios.post(`http://localhost:5021/booking/add-review/${booking.id}/${response.data.id}`).catch(e => e.response);
-		console.log(bookingResponse);
 		if (bookingResponse.status != 200) return alert("An error occured trying to add this review to the booking");
 		
 		const updateResponse = await axios.get(`http://localhost:5021/booking/get-booking/${id}`);

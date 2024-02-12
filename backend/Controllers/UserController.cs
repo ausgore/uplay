@@ -3,6 +3,8 @@ using Uplay.Models;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mail;
+using System.Net;
 
 namespace Uplay.Controllers
 {
@@ -140,6 +142,16 @@ namespace Uplay.Controllers
 			};
 			context.PasswordResetCodes.Add(passwordResetCode);
 			context.SaveChanges();
+
+			var client = new SmtpClient
+			{
+				Host = "smtp.gmail.com",
+				Port = 587,
+				DeliveryMethod = SmtpDeliveryMethod.Network,
+				EnableSsl = true,
+				Credentials = new NetworkCredential("plcehlder2@gmail.com", "anfx bbtb hjeb wsjo")
+			};
+			client.SendMailAsync(from: "plcehlder2@gmail.com", recipients: email, subject: "Uplay password reset", $"Please click the following link to reset your password: http://localhost:5173/reset-password/{resetCode}?email={email}");
 
 			return Ok(passwordResetCode);
 		}

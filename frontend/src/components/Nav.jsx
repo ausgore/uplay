@@ -1,11 +1,13 @@
+import Bell from "../assets/images/bell.png";
 import Logo from "../assets/images/logo.png";
-import { Link, useNavigate } from "react-router-dom"
+import Cart from "../assets/images/cart.png";
+import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { useUser, useUserUpdate } from "../contexts/UserContext";
 import { useEffect, useState } from "react";
 import NavItem from "./NavItem";
 import axios from "axios";
 
-const Nav = ({ staff, disableSearch, transparent }) => {
+const Nav = ({ staff, disableSearch, transparent, setFilterShown, cartUpdated }) => {
 	const user = useUser();
 	const navigate = useNavigate();
 	const [search, setSearch] = useState("");
@@ -16,11 +18,16 @@ const Nav = ({ staff, disableSearch, transparent }) => {
 			const response = await axios.get(`http://localhost:5021/user/cart/${user?.id}`).catch(e => e.response);
 			setCart(response.data);
 		})();
-	}, [user]);
+	}, [user, cartUpdated]);
+
+	const [searchParams] = useSearchParams();
+	const category = searchParams.get("category");
 
 	const handleSearch = (e) => {
 		if (e.key == "Enter") {
-			navigate(`/activities?search=${search}`);
+			navigate(`/activities?search=${search}${category ? `&category=${category}` : ""}`);
+			setSearch("");
+			if (setFilterShown) setFilterShown(false);
 		}
 	}
 
@@ -60,8 +67,19 @@ const Nav = ({ staff, disableSearch, transparent }) => {
 				</>}
 				{/* For if they have signed in */}
 				{user && <>
-					<div className="mr-8 cursor-pointer" onClick={() => navigate("/cart")}>
-						<p className="font-bold">CART ( {cart.length} )</p>
+					{/* Notification */}
+					<div className="relative hover:bg-gray-100 rounded-lg p-1 cursor-pointer" onClick={() => navigate("/announcements")}>
+						<img src={Bell} className="w-[32px] h-[32px]" />
+						{/* This is if there are unread notifications */}
+						<div className="rounded-full bg-purple-500 w-2 h-2 absolute right-0 top-0" />
+					</div>
+					{/* Cart */}
+					<div className="relative hover:bg-gray-100 rounded-lg p-1 mr-2 cursor-pointer" onClick={() => navigate("/cart")}>
+						<img src={Cart} className="w-[32px] h-[32px]" />
+						{/* If there are items in the cart */}
+						{cart.length > 0 && <div className="rounded-full bg-[#E6533F] w-5 h-5 absolute -right-2 -top-1 flex justify-center items-center">
+							<p className="text-xs text-white font-semibold">{cart.length}</p>
+						</div>}
 					</div>
 					<div className="flex items-center relative" onMouseEnter={() => setHovering(true)} onMouseLeave={() => setHovering(false)} style={{ filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.10))"}}>
 						<div className={`${staff ? "bg-[#BA93FF]" : "bg-[#D9D9D9]"} rounded-t-lg w-[225px] px-4 py-1 relative`} onMouseEnter={() => setHovering(true)} onMouseLeave={() => setHovering(false)}>

@@ -16,7 +16,6 @@ const CartCard = ({ product, setCart }) => {
 	}, [product]);
 
 	const remove = async () => {
-		alert("Are you sure you want to delete? (Auto YES)")
 		await axios.delete(`http://localhost:5021/user/delete-cart/${product.id}`);
 		const response = await axios.get(`http://localhost:5021/user/cart/${user.id}`);
 		setCart(response.data);

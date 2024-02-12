@@ -27,7 +27,6 @@ const ManageUsers = () => {
 						<td className="py-5 text-xl font-bold">Email</td>
 						<td className="py-5 text-xl font-bold">HP Number</td>
 						<td className="py-5 text-xl font-bold">User Role</td>
-						<td className="py-5 text-xl font-bold">Status</td>
 						<td></td>
 					</tr>
 				</thead>
@@ -38,8 +37,7 @@ const ManageUsers = () => {
 							<td>{user.name}</td>
 							<td>{user.email}</td>
 							<td>+65 {user.mobileNumber}</td>
-							<td>User</td>
-							<td>Active</td>
+							<td>{user.id == 1 ? "Admin" : "User"}</td>
 						</tr>
 					})}
 					<tr>

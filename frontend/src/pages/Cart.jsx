@@ -3,7 +3,6 @@ import Nav from "../components/Nav";
 import { useUser } from "../contexts/UserContext";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import Screenshot from "../assets/screenshot.png";
 import CartCard from "../components/CartCard";
 
 const Cart = () => {
@@ -39,7 +38,7 @@ const Cart = () => {
 	}
 
 	return <>
-		<Nav />
+		<Nav cartUpdated={cart} />
 		<div className="max-w-[1300PX] mx-auto px-4 pt-32">
 			{/* Header */}
 			<div className="mt-2 mb-3 gap-2 lg:gap-12 flex flex-row justify-between">
@@ -92,9 +91,6 @@ const Cart = () => {
 						</button>
 					</div>
 				</div>
-			</div>
-			<div>
-				<img src={Screenshot} alt="screenshot" className="mt-24" />
 			</div>
 		</div>
 	</>

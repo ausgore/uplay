@@ -9,7 +9,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Activity from "./pages/Activity";
 import Cart from "./pages/Cart";
 import CreateActivity from "./pages/CreateActivity";
-import Activities from "./pages/Activites";
+import Activities from "./pages/Activities";
 import UpdateActivity from "./pages/UpdateActivity";
 import ManageActivities from "./pages/ManageActivities";
 import EditProfile from "./pages/EditProfile";
@@ -20,6 +20,7 @@ import CreateChatbotPrompt from "./pages/Chatbot/CreateChatbotPrompt";
 import ManageChatbotPrompts from "./pages/Chatbot/ManageChatbotPrompts";
 import UpdateChatbotPrompt from "./pages/Chatbot/UpdatePrompt";
 import Checkout from "./pages/Checkout";
+import Announcements from "./pages/Announcements";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
@@ -30,6 +31,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 					<Route path="/" element={<SignUp />} />
 					<Route path="/login" element={<Login />} />
 					<Route path="/reset-password/:token" element={<ResetPassword />} />
+
+					<Route path="/announcements" element={<Announcements />} />
 
 					<Route path="/bookings" element={<Bookings />} />
 					<Route path="/bookings/:id" element={<Booking />} />

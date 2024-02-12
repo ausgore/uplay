@@ -41,9 +41,7 @@ const Login = () => {
 
 		setEmailError("");
 
-		console.log(response.data);
-		alert(`We have sent a link to ${emailValue} (DEBUG Immediate Redirect: ${response.data.resetCode})`);
-		navigate(`/reset-password/${response.data.resetCode}?email=${encodeURIComponent(emailValue)}`);
+		alert("A password reset link has been sent to your email address. Please check your inbox, and follow the instructions to reset your password.");
 	}
 
 	return <>
