@@ -21,6 +21,7 @@ import ManageChatbotPrompts from "./pages/Chatbot/ManageChatbotPrompts";
 import UpdateChatbotPrompt from "./pages/Chatbot/UpdatePrompt";
 import Checkout from "./pages/Checkout";
 import Announcements from "./pages/Announcements";
+import NewAnnouncement from "./pages/NewAnnouncement";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
@@ -28,6 +29,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 			<BrowserRouter>
 				<Routes>
 					<Route path="/edit-profile" element={<EditProfile />} />
+					<Route path="/new-announcement" element={<NewAnnouncement />} />
+
 					<Route path="/" element={<SignUp />} />
 					<Route path="/login" element={<Login />} />
 					<Route path="/reset-password/:token" element={<ResetPassword />} />

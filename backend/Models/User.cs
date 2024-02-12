@@ -15,7 +15,11 @@ namespace Uplay.Models
 
 		public string Password { get; set; } = string.Empty;
 
+		public string Role { get; set; } = "User";
+
 		public string MobileNumber { get; set; } = string.Empty;
+
+		public DateTime LastVisitedAnnouncements { get; set; }
 
 		public DateTime BirthDate { get; set; }
 

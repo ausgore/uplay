@@ -13,12 +13,28 @@ const Nav = ({ staff, disableSearch, transparent, setFilterShown, cartUpdated })
 	const [search, setSearch] = useState("");
 
 	const [cart, setCart] = useState([]);
+	const [latestDate, setLatestDate] = useState([]);
+	useEffect(() => {
+		if (user) {
+			(async () => {
+				const response = await axios.get("http://localhost:5021/announcement/latest");
+				setLatestDate(response.data);
+				console.log(user.lastVisitedAnnouncements);
+			})();
+		}
+	}, []);
+
 	useEffect(() => {
 		(async () => {
 			const response = await axios.get(`http://localhost:5021/user/cart/${user?.id}`).catch(e => e.response);
 			setCart(response.data);
 		})();
 	}, [user, cartUpdated]);
+
+	useEffect(() => {
+		if (!user) return navigate("/activities");
+		if (user.role != "Staff" && user.id != 1 && staff) return navigate("/activities");
+	}, [user]);
 
 	const [searchParams] = useSearchParams();
 	const category = searchParams.get("category");
@@ -71,7 +87,7 @@ const Nav = ({ staff, disableSearch, transparent, setFilterShown, cartUpdated })
 					<div className="relative hover:bg-gray-100 rounded-lg p-1 cursor-pointer" onClick={() => navigate("/announcements")}>
 						<img src={Bell} className="w-[32px] h-[32px]" />
 						{/* This is if there are unread notifications */}
-						<div className="rounded-full bg-purple-500 w-2 h-2 absolute right-0 top-0" />
+						{new Date(user.lastVisitedAnnouncements) < new Date(latestDate) && <div className="rounded-full bg-purple-500 w-2 h-2 absolute right-0 top-0" />}
 					</div>
 					{/* Cart */}
 					<div className="relative hover:bg-gray-100 rounded-lg p-1 mr-2 cursor-pointer" onClick={() => navigate("/cart")}>
@@ -89,13 +105,14 @@ const Nav = ({ staff, disableSearch, transparent, setFilterShown, cartUpdated })
 								<ul className="text-sm font-medium">
 									<NavItem staff={staff} to="/edit-profile">Edit Profile</NavItem>
 									{!staff && <NavItem staff={staff} to="/bookings">Booking History</NavItem>}
+									{staff && <NavItem staff={staff} to="/new-announcement">Create Announcement</NavItem>}
 									{staff && <NavItem staff={staff} to="/manage-activities">Manage Activities</NavItem>}
 									{staff && <NavItem staff={staff} to="/manage-users">Manage Users</NavItem>}
 									{staff && <NavItem staff={staff} to="/manage-chatbot-prompts">Manage Chatbot Prompts</NavItem>}
 								</ul>
 								<hr className="border-black my-2" />
 								<ul className="text-sm font-medium">
-									{!user?.staff && !staff && <NavItem staff={staff} to="/manage-activities">Switch to Staff</NavItem>}
+									{(user.role == "Staff" || user.id == 1) && !staff && <NavItem staff={staff} to="/manage-activities">Switch to Staff</NavItem>}
 									{staff && <NavItem staff={staff} to="/activities">Back to Customer</NavItem>}
 									<NavItem staff={staff} onClick={() => logout()}>Log Out</NavItem>
 								</ul>

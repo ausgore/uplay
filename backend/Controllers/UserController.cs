@@ -30,6 +30,26 @@ namespace Uplay.Controllers
 			}
 			return Ok(result.ToList());
 		}
+		
+		[HttpPost("update-user-role/{id}/{role}")]
+		public IActionResult UpdateUserRole(int id, string role)
+		{
+			var user = context.Users.Where(u => u.Id == id).FirstOrDefault();
+			if (user == null) return NotFound();
+			user.Role = role;
+			context.SaveChanges();
+			return Ok(user);
+		}
+
+		[HttpPost("update-last-visited-announcement/{id}")]
+		public IActionResult UpdateLastVisitedAnnouncement(int id)
+		{
+			var user = context.Users.Where(u => u.Id == id).FirstOrDefault();
+			if (user == null) return NotFound();
+			user.LastVisitedAnnouncements = DateTime.Now;
+			context.SaveChanges();
+			return Ok(user);
+		}
 
 		// Registering a new user
 		[HttpPost("register")]
