@@ -32,15 +32,15 @@ const SignUp = () => {
 			return setConfirmPasswordError("Passwords do not match.");
 		}
 
-		const response = await axios.post("http://localhost:5021/user/register", { 
+		const response = await axios.post("http://localhost:5021/user/register", {
 			email: emailValue, 
 			password: passwordValue,
 			mobileNumber: mobileValue,
 			name: nameValue,
 			birthDate: birthDateValue
 		});
-		if (response.data.email?.includes("already registered") || response.data.mobile) {
-			if (response.data.email?.includes("already registered")) setEmailError(response.data.email);
+		if (response.data.email?.includes("Already registered") || response.data.mobile) {
+			if (response.data.email?.includes("Already registered")) setEmailError(response.data.email);
 			if (response.data.mobile) setMobileError(response.data.mobile);
 			return;
 		}
