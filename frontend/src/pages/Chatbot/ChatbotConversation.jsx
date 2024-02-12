@@ -155,7 +155,7 @@ const ChatbotConversation = ({ closeChatbot }) => {
      
       setTimeout(() => {
         setShowDelayedMsg(true);
-      }, 4000);
+      }, 5000);
       if (selectedQuestion && userFeedback === null) {
         return (
           <>
