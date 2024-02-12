@@ -14,10 +14,10 @@ const Login = () => {
 	const [passwordValue, setPasswordValue] = useState("");
 	const [passwordError, setPasswordError] = useState("");
 
-	
+
 	const onSubmit = async e => {
 		e.preventDefault();
-		
+
 		const response = await axios.post("http://localhost:5021/user/login", { email: emailValue, password: passwordValue }).catch(e => e.response);
 		if (response.data.message) {
 			setEmailError(response.data.message);
@@ -26,7 +26,7 @@ const Login = () => {
 
 		setEmailError("");
 		setPasswordError("");
-		
+
 		updateUser(response.data);
 		alert(`Successfully logged in as ${response.data.email}`);
 		navigate("/activities");
@@ -35,7 +35,7 @@ const Login = () => {
 	const forgotPassword = async e => {
 		setPasswordError("");
 
-		if (!emailValue.length) return setEmailError("Please enter the email of the account you can't log into.");
+		if (!emailValue.length) return setEmailError("Please enter the email of the account you are unable to log into.");
 		const response = await axios.post(`http://localhost:5021/user/forget-password?email=${emailValue}`).catch(e => e.response);
 		if (response.data.message) return setEmailError("We can't seem to find an account under that email address.");
 
