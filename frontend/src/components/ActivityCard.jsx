@@ -57,7 +57,7 @@ const ActivityCard = ({ activity }) => {
 			<button type="button" onClick={() => navigate(`/activities/${activity.id}`)} className="rounded-lg text-white font-semibold max-w-[189px] px-4" style={{
 				background: "linear-gradient(102deg, #EB4710 25.27%, #F8BA05 93.93%)",
 				boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)"
-			}}>View</button>
+			}}>Buy Now</button>
 		</div>
 	</div>
 }
