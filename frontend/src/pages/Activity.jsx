@@ -125,7 +125,7 @@ const Activity = () => {
 						<div className="grid grid-cols-3 gap-2">
 							{activity?.timeslots.map(ts => {
 								const value = ts.timeslot.split(":").slice(0, 2).join(":")
-								return <div key={ts.id} className={`py-1 text-center rounded-lg border-2 font-medium ${timeslot == value ? "border-[#EB4710] text-[#EB4710]" : "border-black"} cursor-pointer`} onClick={() => handleTimeslot(value)}> {value} </div>
+								return <div key={ts.id} className={`py-1 text-center rounded-lg border-2 font-medium ${timeslot == value ? "border-[#933EFF] text-[#933EFF]" : "border-black"} cursor-pointer`} onClick={() => handleTimeslot(value)}> {value} </div>
 							})}
 						</div>
 						{timeslotError.length != 0 && <p className="text-red-500 text-sm italic mt-1">{timeslotError}</p>}
