@@ -57,7 +57,10 @@ const Activities = () => {
 				<CategoryButton setFilterShown={setFilterShown} cat="Travel" />
 			</div>
 			<div className={`flex ${search ? "justify-between" : "justify-end"} my-8`}>
-				{search && <h1 className="text-2xl font-bold">Results for "{search}"</h1>}
+				{search && <div className="items-center flex">
+					<h1 className="text-2xl font-bold">Results for "{search}"</h1>
+					<Link to="/activities" className="font-bold text-lg text-red-700 ml-4 cursor-pointer">x</Link>
+				</div>}
 				{/* Filter */}
 				<div className="relative">
 					<button className="flex justify-center items-center bg-[#FFBC97] w-[140px] h-[40px] rounded-lg" style={{ boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)" }} onClick={() => setFilterShown(true)}>
@@ -123,7 +126,7 @@ const Activities = () => {
 				</div>
 			</div>
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-				{activities.filter(a => {
+				{activities?.filter(a => {
 					return (search ? a.name.toLowerCase().includes(search) : true) 
 						&& (category ? a.category == category : true) 
 						&& (rating ? a.reviews.reduce((a, r) => a + r.rating, 0) >= rating : true)

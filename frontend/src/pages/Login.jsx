@@ -28,7 +28,6 @@ const Login = () => {
 		setPasswordError("");
 
 		updateUser(response.data);
-		alert(`Successfully logged in as ${response.data.email}`);
 		navigate("/activities");
 	}
 
@@ -85,7 +84,7 @@ const Login = () => {
 							</button>
 						</div>
 					</form>
-					<p className="text-center mt-8 font-bold text-lg">Don't have an account? <Link to="/" className="text-[#EB4710]">Sign Up</Link></p>
+					<p className="text-center mt-8 font-bold text-lg">Don't have an account? <Link to="/signup" className="text-[#EB4710]">Sign Up</Link></p>
 				</div>
 			</section>
 		</div>

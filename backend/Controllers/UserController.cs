@@ -41,6 +41,19 @@ namespace Uplay.Controllers
 			return Ok(user);
 		}
 
+		[HttpPost("apply-discount/{cartId}/{codeId}")]
+		public IActionResult ApplyDiscount(int cartId, int codeId)
+		{
+			var cart = context.Carts.Where(c => c.Id == cartId).FirstOrDefault();
+			if (cart == null) return NotFound();
+
+			var discount = context.Discounts.Where(d => d.Id == codeId).FirstOrDefault();
+			if (discount == null) return NotFound();
+			cart.DiscountId = discount.Id;
+			context.SaveChanges();
+			return Ok(cart);
+		}
+
 		[HttpPost("update-last-visited-announcement/{id}")]
 		public IActionResult UpdateLastVisitedAnnouncement(int id)
 		{
@@ -211,7 +224,9 @@ namespace Uplay.Controllers
 			var user = context.Users.Where(u => u.Id == userId).FirstOrDefault();
 			if (user == null) return NotFound();
 
-			var cart = context.Carts.Where(c => c.UserId == userId).Include(c => c.Activity);
+			var cart = context.Carts.Where(c => c.UserId == userId)
+				.Include(c => c.Discount)
+				.Include(c => c.Activity);
 			return Ok(cart.ToList());
 		}
 

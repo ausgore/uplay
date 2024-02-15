@@ -19,7 +19,6 @@ const Nav = ({ staff, disableSearch, transparent, setFilterShown, cartUpdated })
 			(async () => {
 				const response = await axios.get("http://localhost:5021/announcement/latest");
 				setLatestDate(response.data);
-				console.log(user.lastVisitedAnnouncements);
 			})();
 		}
 	}, []);
@@ -32,8 +31,8 @@ const Nav = ({ staff, disableSearch, transparent, setFilterShown, cartUpdated })
 	}, [user, cartUpdated]);
 
 	useEffect(() => {
-		if (!user) return navigate("/activities");
-		if (user.role != "Staff" && user.id != 1 && staff) return navigate("/activities");
+		if (staff && !user) return navigate("/");
+		if (user && user.role != "Staff" && user.id != 1 && staff) return navigate("/");
 	}, [user]);
 
 	const [searchParams] = useSearchParams();
@@ -62,8 +61,8 @@ const Nav = ({ staff, disableSearch, transparent, setFilterShown, cartUpdated })
 				<input type="text" placeholder="Search activities" className="py-2 px-4 border outline-none rounded-lg border-gray-500 w-[300px]" onKeyDown={handleSearch} value={search} onChange={e => setSearch(e.target.value)} />
 			</div>}
 			{/* Logo */}
-			<div className={`w-20 md:w-24 lg:w-28 ${disableSearch ? "mx-0 lg:mx-auto" : ""} cursor-pointer`} onClick={() => navigate("/activities")}>
-				<img src={Logo} className="w-full" />
+			<div className={`self-center cursor-pointer`} onClick={() => navigate("/")}>
+				<img src={Logo} className="w-20 md:w-24 lg:w-28" />
 			</div>
 			{/* Navigators for PC */}
 			<div className="flex-row items-center hidden lg:flex gap-4">
@@ -74,7 +73,7 @@ const Nav = ({ staff, disableSearch, transparent, setFilterShown, cartUpdated })
 						Log In
 					</Link>
 					{/* Sign Up */}
-					<Link to="/" className="py-2 px-9 text-white font-bold rounded-[10px]" style={{
+					<Link to="/signup" className="py-2 px-9 text-white font-bold rounded-[10px]" style={{
 						background: "linear-gradient(102deg, #EB4710 25.27%, #F8BA05 93.93%)",
 						boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)"
 					}}>
@@ -105,10 +104,13 @@ const Nav = ({ staff, disableSearch, transparent, setFilterShown, cartUpdated })
 								<ul className="text-sm font-medium">
 									<NavItem staff={staff} to="/edit-profile">Edit Profile</NavItem>
 									{!staff && <NavItem staff={staff} to="/bookings">Booking History</NavItem>}
-									{staff && <NavItem staff={staff} to="/new-announcement">Create Announcement</NavItem>}
-									{staff && <NavItem staff={staff} to="/manage-activities">Manage Activities</NavItem>}
-									{staff && <NavItem staff={staff} to="/manage-users">Manage Users</NavItem>}
-									{staff && <NavItem staff={staff} to="/manage-chatbot-prompts">Manage Chatbot Prompts</NavItem>}
+									{staff && <>
+										<NavItem staff={staff} to="/new-announcement">Create Announcement</NavItem>
+										<NavItem staff={staff} to="/manage-activities">Manage Activities</NavItem>
+									    <NavItem staff={staff} to="/manage-discounts">Manage Discounts</NavItem>
+										<NavItem staff={staff} to="/manage-users">Manage Users</NavItem>
+										<NavItem staff={staff} to="/manage-chatbot-prompts">Manage Chatbot Prompts</NavItem>
+									</>}
 								</ul>
 								<hr className="border-black my-2" />
 								<ul className="text-sm font-medium">

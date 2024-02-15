@@ -16,6 +16,7 @@ const Checkout = () => {
 
 	useEffect(() => {
 		if (!user) navigate("/activities");
+		if (!cart) navigate("/cart");
 	}, []);
 	
 	useEffect(() => {
@@ -36,12 +37,15 @@ const Checkout = () => {
 	}, []);
 
 	useEffect(() => {
-		(async () => {
-			const total = cart.reduce((a, p) => a + (p.adultQuantity * p.activity.adultPrice) + (p.childQuantity * p.activity.childPrice), 0);
-			const response = await axios.post(`http://localhost:5021/stripe/create-payment-intent/${total}`);
-			const { clientSecret } = response.data;
-			setClientSecret(clientSecret);
-		})();
+		if (cart) {
+			(async () => {
+				let total = cart.reduce((a, p) => a + (((p.adultQuantity * p.activity.adultPrice) + (p.childQuantity * p.activity.childPrice)) * (p.discount ? (1 - p.discount.percentage / 100) : 1)), 0);
+				total = Math.round(total * 100);
+				const response = await axios.post(`http://localhost:5021/stripe/create-payment-intent/${total}`);
+				const { clientSecret } = response.data;
+				setClientSecret(clientSecret);
+			})();
+		}
 	}, [cart]);
 
 	return <>

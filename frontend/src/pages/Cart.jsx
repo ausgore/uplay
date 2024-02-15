@@ -6,19 +6,23 @@ import { Link, useNavigate } from "react-router-dom";
 import CartCard from "../components/CartCard";
 
 const Cart = () => {
-	const validCouponCodes = ["uplay23"];
-
 	const navigate = useNavigate();
 	const user = useUser();
 	const [cart, setCart] = useState([]);
 
 	const [couponCodeValue, setCouponCodeValue] = useState("");
-	const [appliedCouponCode, setAppliedCouponCode] = useState("");
+	const [appliedCode, setAppliedCode] = useState();
 
-	const applyCouponCode = () => {
-		if (!validCouponCodes.includes(couponCodeValue.toLowerCase())) return alert("Provided coupon is invalid. (Try UPLAY23)");
-		setAppliedCouponCode(couponCodeValue);
+	const applyCouponCode = async () => {
+		const response = await axios.get(`http://localhost:5021/discount/get-discount-code/${couponCodeValue}`).catch(e => e.response);
+		if (response.status != 200 || response.data.disabled) return alert("The coupon code provided is invalid.");
+
+		setAppliedCode(response.data);
 		setCouponCodeValue("");
+		if (cart.length) {
+			for (const product of cart) await axios.post(`http://localhost:5021/user/apply-discount/${product.id}/${response.data.id}`);
+		}
+
 		alert("Coupon code has been applied.");
 	}
 
@@ -27,13 +31,16 @@ const Cart = () => {
 			if (user) {
 				const response = await axios.get(`http://localhost:5021/user/cart/${user.id}`).catch(e => e.response);
 				if (response.status == 200) setCart(response.data);
-				console.log(response.data);
+				if (response.data[0].discountId) setAppliedCode(response.data[0].discount);
 			}
 		})();
 	}, [user]);
 
 	const checkout = async () => {
 		if (!cart.length) return alert("You can't checkout with nothing.");
+		if (appliedCode) {
+			for (const product of cart) await axios.post(`http://localhost:5021/user/apply-discount/${product.id}/${appliedCode.id}`);
+		}
 		navigate("/checkout");
 	}
 
@@ -63,13 +70,13 @@ const Cart = () => {
 								<td className="font-semibold">Subtotal</td>
 								<td className="font-semibold text-right">S${cart.reduce((a, p) => a + (p.adultQuantity * p.activity.adultPrice) + (p.childQuantity * p.activity.childPrice), 0).toFixed(2)}</td>
 							</tr>
-							{appliedCouponCode && <tr className="text-[#096A00] text-sm font-semibold">
-								<td className="pr-7">CODE : {appliedCouponCode.toUpperCase()} (20%OFF)</td>
-								<td className="text-right">-S${(cart.reduce((a, p) => a + (p.adultQuantity * p.activity.adultPrice) + (p.childQuantity * p.activity.childPrice), 0) * 0.2).toFixed(2)}</td>
+							{appliedCode && <tr className="text-[#096A00] text-sm font-semibold">
+								<td className="pr-7">CODE : {appliedCode.code.toUpperCase()} ({appliedCode.percentage}%OFF)</td>
+								<td className="text-right">-S${(cart.reduce((a, p) => a + (p.adultQuantity * p.activity.adultPrice) + (p.childQuantity * p.activity.childPrice), 0) * (appliedCode.percentage / 100)).toFixed(2)}</td>
 							</tr>}
 							<tr>
 								<td className="font-bold text-lg pt-8">Total</td>
-								<td className="font-bold text-lg pt-8 text-right">S${(cart.reduce((a, p) => a + (p.adultQuantity * p.activity.adultPrice) + (p.childQuantity * p.activity.childPrice), 0) * (appliedCouponCode ? 0.8 : 1)).toFixed(2)}</td>
+								<td className="font-bold text-lg pt-8 text-right">S${(cart.reduce((a, p) => a + (p.adultQuantity * p.activity.adultPrice) + (p.childQuantity * p.activity.childPrice), 0) * (appliedCode ? (1 - appliedCode.percentage / 100) : 1)).toFixed(2)}</td>
 							</tr>
 						</tbody>
 					</table>

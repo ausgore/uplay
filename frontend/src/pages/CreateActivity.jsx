@@ -39,9 +39,8 @@ const CreateActivity = () => {
 		if (!hour || hour.length > 2 || minute.length > 2 || !minute) return alert("You must provide a valid time to add.");
 		const timeslot = `${hour.length == 1 ? "0" : ""}${hour}:${minute.length == 1 ? "0" : ""}${minute}`;
 		if (timeslots.includes(timeslot)) return alert("This is already an existing timeslot.");
-
-		timeslots.push(timeslot);
-		setTimeslots(timeslots);
+		
+		setTimeslots([...timeslots, timeslot]);
 		setHour("");
 		setMinute("");
 	}
@@ -111,7 +110,7 @@ const CreateActivity = () => {
 		for (const timeslot of timeslots) await axios.post(`http://localhost:5021/activity/add-timeslot/${response.data.id}`, { timeslot: `${timeslot}:00` });
 		if (separatedTags.length) await axios.post(`http://localhost:5021/activity/add-tag/${response.data.id}`, separatedTags.map(tag => ({ content: tag }))).then(console.log);
 
-		alert("Activity successfully created. (DEBUG) Going to activity page.");
+		alert("Activity successfully created.");
 		return navigate(`/activities/${response.data.id}`);
 	}
 

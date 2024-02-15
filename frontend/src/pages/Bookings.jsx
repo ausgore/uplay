@@ -13,6 +13,7 @@ const Bookings = () => {
 		(async () => {
 			const response = await axios.get(`http://localhost:5021/booking/get-bookings/${user?.id}`)
 			setBookings(response.data);
+			console.log(response.data);
 		})();
 	}, [user]);
 
@@ -38,7 +39,7 @@ const Bookings = () => {
 							<td className="pl-6 py-4 font-bold">{booking.activityName}</td>
 							<td>{new Date(booking.bookedDate).toLocaleDateString("en-US", { day: "numeric", month: "numeric", year: "numeric" })} {booking.timeslot && <>{new Date(`2024-01-01T${booking.timeslot}:00`).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })}</>}</td>
 							<td>{booking.id}</td>
-							<td>S${((booking.childQuantity * booking.initialChildPrice) + (booking.adultQuantity * booking.initialAdultPrice)).toFixed(2)}</td>
+							<td>S${(((booking.childQuantity * booking.initialChildPrice) + (booking.adultQuantity * booking.initialAdultPrice)) * (booking.appliedDiscount ? 1 - (booking.appliedDiscount / 100) : 1) ).toFixed(2)}</td>
 							<td className="pr-6 py-4 flex justify-end items-center gap-2">
 								<div className="flex gap-4">
 									<button className="text-sm rounded-lg text-white font-medium px-4 py-2" style={{

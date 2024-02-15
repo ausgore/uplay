@@ -16,6 +16,11 @@ namespace Uplay.Models
 
 		[ForeignKey("Activity")]
 		public int ActivityId { get; set; }
+
+		[ForeignKey("Discount")]
+		public int? DiscountId { get; set; }
+		
+		public virtual Discount? Discount { get; set; }
 		
 		public string? Timeslot { get; set; } = string.Empty;
 		

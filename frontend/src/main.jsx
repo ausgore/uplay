@@ -22,6 +22,10 @@ import UpdateChatbotPrompt from "./pages/Chatbot/UpdatePrompt";
 import Checkout from "./pages/Checkout";
 import Announcements from "./pages/Announcements";
 import NewAnnouncement from "./pages/NewAnnouncement";
+import CreateDiscount from "./pages/CreateDiscount";
+import ManageDiscounts from "./pages/ManageDiscounts";
+import UpdateDiscount from "./pages/UpdateDiscount";
+import Home from "./pages/Home";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
@@ -31,7 +35,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 					<Route path="/edit-profile" element={<EditProfile />} />
 					<Route path="/new-announcement" element={<NewAnnouncement />} />
 
-					<Route path="/" element={<SignUp />} />
+					<Route path="/" index element={<Home />} />
+					<Route path="/signup" element={<SignUp />} />
 					<Route path="/login" element={<Login />} />
 					<Route path="/reset-password/:token" element={<ResetPassword />} />
 
@@ -44,6 +49,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 					<Route path="/activities" element={<Activities />} />
 					<Route path="/activities/:id" element={<Activity />} />
 					<Route path="/cart" element={<Cart />} />
+
+					<Route path="/create-discount" element={<CreateDiscount />} />
+					<Route path="/manage-discounts" element={<ManageDiscounts />} />
+					<Route path="/update-discount/:id" element={<UpdateDiscount />} />
 
 					<Route path="/create-activity" element={<CreateActivity />} />
 					<Route path="/manage-activities" element={<ManageActivities />} />

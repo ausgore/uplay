@@ -29,6 +29,10 @@ namespace Uplay.Models
 
 		public int? ChildQuantity { get; set; } = 0;
 		public int? AdultQuantity { get; set; } = 0;
+
+		public string? DiscountName { get; set; }
+		public int? AppliedDiscount { get; set; }
+
 		public int? InitialChildPrice { get; set; } = null;
 		public int? InitialAdultPrice { get; set; } = null;
 

@@ -61,7 +61,8 @@ const Booking = () => {
 				{booking?.childQuantity != 0 && <p className="font-bold text-xl">Children x{booking?.childQuantity} - S${booking?.initialChildPrice.toFixed(2)} (S${(booking?.childQuantity * booking?.initialChildPrice).toFixed(2)})</p>}
 				{booking?.adultQuantity != 0 && <p className="font-bold text-xl">Adult x{booking?.adultQuantity} - S${booking?.initialAdultPrice.toFixed(2)} (S${(booking?.adultQuantity * booking?.initialAdultPrice).toFixed(2)})</p>}
 				<br />
-				<p className="font-bold text-xl">Total - S${((booking?.adultQuantity * booking?.initialAdultPrice ?? 0) + (booking?.childQuantity * booking?.initialChildPrice ?? 0)).toFixed(2)}</p>
+				{booking?.discountName?.length > 0 && <p className="italic font-medium text-green-600">Applied Discount ({booking.appliedDiscount}%) - S${(((booking?.adultQuantity * booking?.initialAdultPrice ?? 0) + (booking?.childQuantity * booking?.initialChildPrice ?? 0) * (booking.appliedDiscount / 100))).toFixed(2)}</p>}
+				<p className="font-bold text-xl">Total - <span className={booking?.appliedDiscount ? "line-through" : ""}>S${((booking?.adultQuantity * booking?.initialAdultPrice ?? 0) + (booking?.childQuantity * booking?.initialChildPrice ?? 0)).toFixed(2)}</span> {booking?.discountName?.length > 0 && <span>S${(((booking?.adultQuantity * booking?.initialAdultPrice ?? 0) + (booking?.childQuantity * booking?.initialChildPrice ?? 0) * (1 - booking.appliedDiscount / 100))).toFixed(2)}</span>}</p>
 			</div>
 			<hr className="border-black" />
 			{!booking?.reviewId && <>

@@ -39,7 +39,7 @@ const UpdateActivity = () => {
 	const addTimeslot = async () => {
 		if (!hour || hour.length > 2 || !minute || minute.length > 2) return alert("You must provide a valid time to add.");
 		const timeslot = `${hour.length == 1 ? "0" : ""}${hour}:${minute.length == 1 ? "0" : ""}${minute}`;
-		if (timeslots.includes(timeslot)) return alert("This is already an existing timeslot.");
+		if (timeslots.map(t => `${t.timeslot.split(":")[0]}:${t.timeslot.split(":")[1]}`).includes(timeslot)) return alert("This is already an existing timeslot.");
 		setHour("");
 		setMinute("");
 
@@ -57,8 +57,8 @@ const UpdateActivity = () => {
 		(async () => {
 			const response = await axios.get(`http://localhost:5021/activity?id=${id}`).catch(e => e.response);
 			if (response.status != 200 || !response.data[0]) {
-				alert(`(DEBUG) No activity with ID ${id}. Returning to sign in page.`);
-				navigate("/");
+				alert(`(DEBUG) No activity with ID ${id}. Redirecting...`);
+				navigate("/activities");
 			}
 
 			const fileResponse = await axios.get(`http://localhost:5021/activity/file/${id}`, { responseType: "arraybuffer" });

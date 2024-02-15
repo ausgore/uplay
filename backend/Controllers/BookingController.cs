@@ -62,6 +62,8 @@ namespace Uplay.Controllers
 				BookedDate = data.BookedDate,
 				ActivityId = data.ActivityId,
 				ActivityName = data.ActivityName,
+				DiscountName = data.DiscountName ?? null,
+				AppliedDiscount = data.AppliedDiscount ?? null,
 				Timeslot = data.Timeslot,
 				ActivityPostalCode = data.ActivityPostalCode,
 				ChildQuantity = data.ChildQuantity ?? 0,
