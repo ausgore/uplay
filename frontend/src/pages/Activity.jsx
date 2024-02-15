@@ -116,7 +116,7 @@ const Activity = () => {
 					{/* Date */}
 					<div className="mb-4">
 						<h2 className="font-semibold text-lg mb-1">Select Date</h2>
-						<input type="date" value={date} onChange={e => setDate(e.target.value)} className="outline-none cursor-pointer required" min={(new Date(activity?.startingAt) >= new Date() ? activity?.startingAt : new Date(Date.now() + 8.64e+7)).toISOString().split("T")[0]} max={activity?.endingAt?.split("T")} />
+						<input type="date" value={date} onChange={e => setDate(e.target.value)} className="outline-none cursor-pointer required" min={(new Date(activity?.startingAt) >= new Date() ? activity?.startingAt : new Date(Date.now() + 8.64e+7).toISOString().split("T")[0])} max={activity?.endingAt?.split("T")} />
 						{dateError.length != 0 && <p className="text-red-500 text-sm italic">{dateError}</p>}
 					</div>
 					{/* Timeslots */}

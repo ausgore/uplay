@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Star from "../assets/images/star.png";
 
-const ActivityCard = ({ activity }) => {
+const ActivityCard = ({ activity, hideTags }) => {
 	const [file, setFile] = useState("");
 	const navigate = useNavigate();
 	useEffect(() => {
@@ -35,7 +35,7 @@ const ActivityCard = ({ activity }) => {
 				<p className="text-[#737373] font-semibold text-sm">{activity.isDaily ? "Daily" : "1 Apr - 5 Apr"}</p>
 			</div>
 			{/* Tag Wrapper */}
-			{activity.tags.filter(t => t.content.length).length > 0 && <div className="flex flex-wrap gap-4">
+			{!hideTags && activity.tags.filter(t => t.content.length).length > 0 && <div className="flex flex-wrap gap-4">
 				{activity.tags.filter(t => t.content.length).map(tag => (<div key={tag.id} className="bg-[#FFBC97] rounded-3xl text-[#EB4710] font-semibold text-center text-xs py-2 px-3" style={{ boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)" }}>{tag.content}</div>))}
 			</div>}
 			{/* Date for web */}
@@ -52,7 +52,7 @@ const ActivityCard = ({ activity }) => {
 			<p className="text-[#5F5F5F] font-semibold italic text-sm">({activity.reviews.length})</p>
 		</div>}
 		{/* Third Row */}
-		<div className="flex justify-between mt-2">
+		<div className="flex justify-between mt-8">
 			<p className="text-2xl font-semibold">S$ {((activity.childPrice ? activity.childPrice : activity.adultPrice) ?? 0).toFixed(2)}</p>
 			<button type="button" onClick={() => navigate(`/activities/${activity.id}`)} className="rounded-lg text-white font-semibold max-w-[189px] px-4" style={{
 				background: "linear-gradient(102deg, #EB4710 25.27%, #F8BA05 93.93%)",

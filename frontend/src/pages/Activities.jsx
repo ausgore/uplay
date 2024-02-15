@@ -129,7 +129,7 @@ const Activities = () => {
 				{activities?.filter(a => {
 					return (search ? a.name.toLowerCase().includes(search) : true) 
 						&& (category ? a.category == category : true) 
-						&& (rating ? a.reviews.reduce((a, r) => a + r.rating, 0) >= rating : true)
+						&& (rating ? a.reviews.reduce((a, r) => a + r.rating, 0) == rating : true)
 						&& (tags.length > 0 ? tagsToFilter.every(tag => a.tags.map(t => t.content).includes(tag)) : true)
 						&& (minPrice > 0 ? a.childPrice >= minPrice || a.adultPrice >= minPrice : true)
 						&& (maxPrice > 0 ? a.childPrice <= maxPrice || a.adultPrice <= maxPrice : true)

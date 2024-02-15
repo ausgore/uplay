@@ -13,7 +13,7 @@ const NewAnnouncement = () => {
 		e.preventDefault();
 		await axios.post(`http://localhost:5021/announcement/create`, { title, description });
 		alert("Successfully added news!");
-		navigate("/activities");
+		navigate("/manage-activities");
 	}
 
 	return <div>

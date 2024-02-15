@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import NavItem from "./NavItem";
 import axios from "axios";
 
-const Nav = ({ staff, disableSearch, transparent, setFilterShown, cartUpdated }) => {
+const Nav = ({ staff, disableSearch, transparent, setFilterShown, cartUpdated, withShadow }) => {
 	const user = useUser();
 	const navigate = useNavigate();
 	const [search, setSearch] = useState("");
@@ -54,7 +54,7 @@ const Nav = ({ staff, disableSearch, transparent, setFilterShown, cartUpdated })
 		if (staff) navigate("/login");
 	}
 
-	return <nav className={`${transparent ? "" : "bg-white"} fixed w-full top-0 z-10`}>
+	return <nav className={`${transparent ? "" : "bg-white"} fixed w-full top-0 z-10`} style={{ boxShadow: withShadow ? "0px 4px 4px 0px rgba(0, 0, 0, 0.25)" : "" }}>
 		<div className="max-w-[1600px] mx-auto px-4 py-6 flex items-center justify-between">
 			{/* Search */}
 			{!disableSearch && <div className="lg:block hidden">
@@ -96,11 +96,11 @@ const Nav = ({ staff, disableSearch, transparent, setFilterShown, cartUpdated })
 							<p className="text-xs text-white font-semibold">{cart.length}</p>
 						</div>}
 					</div>
-					<div className="flex items-center relative" onMouseEnter={() => setHovering(true)} onMouseLeave={() => setHovering(false)} style={{ filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.10))"}}>
+					<div className="flex items-center relative" onMouseEnter={() => setHovering(true)} onMouseLeave={() => setHovering(false)} style={{ boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)" }}>
 						<div className={`${staff ? "bg-[#BA93FF]" : "bg-[#D9D9D9]"} rounded-t-lg w-[225px] px-4 py-1 relative`} onMouseEnter={() => setHovering(true)} onMouseLeave={() => setHovering(false)}>
 							<p className="font-bold text-sm">{user?.name}</p>
 							<p className="text-sm">{user?.email}</p>
-							{hovering && <div className={`w-full absolute ${staff ? "bg-[#BA93FF]" : "bg-[#E7E7E7]"} right-0 top-12 px-2 py-2 rounded-b-lg`} style={{ filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.10))"}}>
+							{hovering && <div className={`w-full absolute ${staff ? "bg-[#BA93FF]" : "bg-[#E7E7E7]"} right-0 top-12 px-2 py-2 rounded-b-lg`} style={{ boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)" }}>
 								<ul className="text-sm font-medium">
 									<NavItem staff={staff} to="/edit-profile">Edit Profile</NavItem>
 									{!staff && <NavItem staff={staff} to="/bookings">Booking History</NavItem>}

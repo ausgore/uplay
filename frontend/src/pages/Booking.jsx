@@ -66,7 +66,7 @@ const Booking = () => {
 			</div>
 			<hr className="border-black" />
 			{!booking?.reviewId && <>
-				<div className="mt-8 mb-20">
+				<div className="mt-8 mb-4">
 					<h1 className="text-2xl font-bold">Let others know what you thought of it...</h1>
 					<div className="flex flex-row mb-4 my-4">
 						<img src={Star} className="w-[35px] h-[35px] mr-1" onClick={e => setRating(1)} />
@@ -79,7 +79,7 @@ const Booking = () => {
 					<textarea className="outline-none border w-[800px] h-[250px] rounded-lg px-4 py-2 resize-none border-gray-300" placeholder="What did you think about the activity?" value={review} onChange={e => setReview(e.target.value)} />
 				</div>
 				{/* Submit review */}
-				<button className="rounded-lg max-w-[200px] text-white font-semibold text-sm px-4 py-2 mt-4" style={{ background: "linear-gradient(102deg, #EB4710 25.27%, #F8BA05 93.93%)", boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)" }} onClick={submitReview}>Submit Review</button>
+				<button className="rounded-lg max-w-[200px] text-white font-semibold text-sm px-4 py-2 mb-20" style={{ background: "linear-gradient(102deg, #EB4710 25.27%, #F8BA05 93.93%)", boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)" }} onClick={submitReview}>Submit Review</button>
 			</>}
 			{booking?.reviewId && <>
 				<div className="mt-8 mb-20">
